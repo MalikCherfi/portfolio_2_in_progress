@@ -8,8 +8,9 @@ export default function Home() {
     <div className="w-screen h-screen">
       <Canvas
         shadows
-        camera={{ position: [0, 0, 3], fov: 45 }}
+        camera={{ position: [0, 1, 14], fov: 45 }}
         gl={{ antialias: true }}
+        style={{ background: "#BED3C3" }}
       >
         <Scene />
       </Canvas>
