@@ -66,8 +66,16 @@ const Cube = () => {
       onPointerLeave={onPointerUp}
       onPointerCancel={onPointerUp}
     >
+      {/* <mesh
+        position={[0, 0, 0.71]} // légèrement devant la face avant
+        onClick={(e) => console.log("Bouton cliqué !")}
+      >
+        <planeGeometry args={[0.8, 0.4]} />
+        <meshStandardMaterial color="orange" />
+      </mesh> */}
+
       <mesh castShadow receiveShadow>
-        <boxGeometry args={[1.4, 1.4, 1.4]} />
+        <boxGeometry args={[4, 4, 4]} />
         <meshStandardMaterial
           metalness={0.85}
           roughness={0.15}
@@ -76,6 +84,6 @@ const Cube = () => {
       </mesh>
     </group>
   );
-}
+};
 
 export default Cube;
