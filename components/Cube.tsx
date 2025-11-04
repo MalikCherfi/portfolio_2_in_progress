@@ -2,11 +2,19 @@ import { useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 
-const Cube = () => {
+type CubeProps = {
+  resetCubePosition: boolean;
+  setResetCubePosition: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const Cube = ({ resetCubePosition, setResetCubePosition }: CubeProps) => {
   const groupRef = useRef<THREE.Group | null>(null);
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+
+  const initialPosition = new THREE.Vector3(0, 0, 0);
+  const initialQuaternion = new THREE.Quaternion();
 
   const axisX = new THREE.Vector3(1, 0, 0);
   const axisY = new THREE.Vector3(0, 1, 0);
@@ -14,12 +22,26 @@ const Cube = () => {
   useFrame(() => {
     if (!groupRef.current) return;
 
-    // apply rotation using quaternions (inertia)
-    groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
-    groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
+    // Drag rotation + inertia
+    if (!resetCubePosition) {
+      groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
+      groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
 
-    velocity.current.x *= 0.95;
-    velocity.current.y *= 0.95;
+      velocity.current.x *= 0.95;
+      velocity.current.y *= 0.95;
+    } else {
+      // Animation fluide vers la position initiale
+      groupRef.current.position.lerp(initialPosition, 0.1);
+      groupRef.current.quaternion.slerp(initialQuaternion, 0.1);
+
+      // Stop reset quand on est proche
+      if (
+        groupRef.current.position.distanceTo(initialPosition) < 0.01 &&
+        groupRef.current.quaternion.angleTo(initialQuaternion) < 0.01
+      ) {
+        setResetCubePosition(false);
+      }
+    }
   });
 
   const onPointerDown = (e: any) => {
