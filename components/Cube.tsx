@@ -1,17 +1,15 @@
 import { useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { useCubeStore } from "@/stores/cubeStore";
 
-type CubeProps = {
-  resetCubePosition: boolean;
-  setResetCubePosition: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const Cube = ({ resetCubePosition, setResetCubePosition }: CubeProps) => {
+const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const reset = useCubeStore((state) => state.reset);
+  const setReset = useCubeStore((state) => state.setReset);
 
   const initialPosition = new THREE.Vector3(0, 0, 0);
   const initialQuaternion = new THREE.Quaternion();
@@ -23,7 +21,7 @@ const Cube = ({ resetCubePosition, setResetCubePosition }: CubeProps) => {
     if (!groupRef.current) return;
 
     // Drag rotation + inertia
-    if (!resetCubePosition) {
+    if (!reset) {
       groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
       groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
 
@@ -39,7 +37,7 @@ const Cube = ({ resetCubePosition, setResetCubePosition }: CubeProps) => {
         groupRef.current.position.distanceTo(initialPosition) < 0.01 &&
         groupRef.current.quaternion.angleTo(initialQuaternion) < 0.01
       ) {
-        setResetCubePosition(false);
+        setReset(false);
       }
     }
   });
