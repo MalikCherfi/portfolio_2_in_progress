@@ -1,7 +1,12 @@
 import { Environment, ContactShadows } from "@react-three/drei";
 import Cube from "./Cube";
 
-const Scene = () => {
+type SceneProps = {
+  resetCubePosition: boolean;
+  setResetCubePosition: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const Scene = ({ resetCubePosition, setResetCubePosition }: SceneProps) => {
   return (
     <>
       <ambientLight intensity={0.35} />
@@ -17,9 +22,11 @@ const Scene = () => {
         shadow-radius={8}
       />
 
-      <Cube />
+      <Cube
+        resetCubePosition={resetCubePosition}
+        setResetCubePosition={setResetCubePosition}
+      />
 
-      {/* Ombre douce */}
       <ContactShadows
         position={[0, -3.6, 0]}
         opacity={0.7}
