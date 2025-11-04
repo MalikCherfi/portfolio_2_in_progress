@@ -2,17 +2,15 @@
 
 import { Canvas } from "@react-three/fiber";
 import Scene from "../components/Scene";
-import { useState } from "react";
+import { useCubeStore } from "@/stores/cubeStore";
 
 export default function Home() {
-  const [resetCubePosition, setResetCubePosition] = useState(false);
+  const setReset = useCubeStore((state) => state.setReset);
 
   return (
     <div className="w-screen h-screen">
       <div className="absolute top-5 left-5 z-10 flex gap-2">
-        <button onClick={() => setResetCubePosition(true)}>
-          Reset
-        </button>
+        <button onClick={() => setReset(true)}>Reset</button>
       </div>
       <Canvas
         shadows
@@ -20,10 +18,7 @@ export default function Home() {
         gl={{ antialias: true }}
         style={{ background: "#BED3C3" }}
       >
-        <Scene
-          resetCubePosition={resetCubePosition}
-          setResetCubePosition={setResetCubePosition}
-        />
+        <Scene />
       </Canvas>
     </div>
   );
