@@ -3,6 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import Scene from "../components/Scene";
 import { useCubeStore } from "@/stores/cubeStore";
+import { RotateCcw } from "lucide-react";
 
 export default function Home() {
   const setReset = useCubeStore((state) => state.setReset);
@@ -10,7 +11,12 @@ export default function Home() {
   return (
     <div className="w-screen h-screen">
       <div className="absolute top-5 left-5 z-10 flex gap-2">
-        <button onClick={() => setReset(true)}>Reset</button>
+        <button
+          onClick={() => setReset(true)}
+          className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
+        >
+          <RotateCcw size={22} />
+        </button>
       </div>
       <Canvas
         shadows
