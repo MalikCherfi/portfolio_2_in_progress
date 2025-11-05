@@ -20,9 +20,9 @@ export default function Home() {
       </div>
       <Canvas
         shadows
-        camera={{ position: [0, 1, 14], fov: 45 }}
+        camera={{ position: [0, 1, 16], fov: 45 }}
         gl={{ antialias: true }}
-        style={{ background: "#BED3C3" }}
+        style={{ background: "#CE6A6B" }}
       >
         <Scene />
       </Canvas>
