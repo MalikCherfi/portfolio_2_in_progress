@@ -8,14 +8,8 @@ const Scene = () => {
   return (
     <>
       <ambientLight intensity={0.7} />
-
-      <spotLight
-        position={[0, 5, 5]}
-        angle={1}
-        penumbra={1}
-        intensity={200}
-        castShadow
-      />
+      <directionalLight position={[5, 5, 5]} intensity={1.2} />
+      <directionalLight position={[-5, -5, -5]} intensity={0.5} />
 
       <Cube />
 
