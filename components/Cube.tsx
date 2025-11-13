@@ -126,10 +126,10 @@ const Cube = () => {
         receiveShadow
       >
         <meshStandardMaterial
-          color="#08C5D1"
-          emissive="#08C5D1"
+          color="#FF4F00"
+          emissive="#FF4F00"
           roughness={1}
-          metalness={0}
+          metalness={1}
         />
       </RoundedBox>
     </group>
