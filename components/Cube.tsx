@@ -36,19 +36,21 @@ const Cube = () => {
   const axisX = new THREE.Vector3(1, 0, 0);
   const axisY = new THREE.Vector3(0, 1, 0);
 
+  const timeOffset = useRef(0);
+
   useFrame(() => {
     if (!groupRef.current) return;
 
     const elapsed = clock.current.getElapsedTime();
+    const t = elapsed - timeOffset.current; // on applique l'offset temporel
 
-    // Drag rotation + inertia
     if (!reset) {
-      // 🎯 effet bounce vertical
-      const bounce = Math.sin(elapsed * 2) * 0.2; // amplitude et vitesse
+      // 🎯 effet bounce vertical fluide
+      const bounce = Math.sin(t * 2) * 0.2;
       groupRef.current.position.y = bounce;
-
       setBounceY(bounce);
 
+      // rotation + inertie
       groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
       groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
 
@@ -64,6 +66,8 @@ const Cube = () => {
         groupRef.current.position.distanceTo(initialPosition) < 0.01 &&
         groupRef.current.quaternion.angleTo(initialQuaternion) < 0.01
       ) {
+        // 🔄 Quand le reset est fini, on recale le bounce ici :
+        timeOffset.current = clock.current.getElapsedTime();
         setReset(false);
       }
     }
