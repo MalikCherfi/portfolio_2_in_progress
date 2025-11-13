@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
+// import { useTexture } from "@react-three/drei";
+import { RoundedBox } from "@react-three/drei";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -10,7 +12,24 @@ const Cube = () => {
   const [isDragging, setIsDragging] = useState(false);
   const reset = useCubeStore((state) => state.reset);
   const setReset = useCubeStore((state) => state.setReset);
+  const clock = useRef(new THREE.Clock());
+  const setBounceY = useCubeStore((state) => state.setBounceY);
 
+  //   const boxRef = useRef<any>();
+
+  //   useEffect(() => {
+  //     if (!boxRef.current) return;
+  //     const geom = boxRef.current.geometry;
+  //     geom.computeBoundingBox();
+  //     geom.attributes.uv2 = geom.attributes.uv; // ✅ Fix textures
+  //   }, []);
+
+  //   const [albedo, normal, roughness, ao] = useTexture([
+  //     "/grainy-concrete_albedo.png", // couleur
+  //     "/grainy-concrete_normal-dx.png", // relief
+  //     "/grainy-concrete_roughness.png", // rugosité
+  //     "/grainy-concrete_ao.png", // ombres ambiantes
+  //   ]);
   const initialPosition = new THREE.Vector3(0, 0, 0);
   const initialQuaternion = new THREE.Quaternion();
 
@@ -20,8 +39,16 @@ const Cube = () => {
   useFrame(() => {
     if (!groupRef.current) return;
 
+    const elapsed = clock.current.getElapsedTime();
+
     // Drag rotation + inertia
     if (!reset) {
+      // 🎯 effet bounce vertical
+      const bounce = Math.sin(elapsed * 2) * 0.2; // amplitude et vitesse
+      groupRef.current.position.y = bounce;
+
+      setBounceY(bounce);
+
       groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
       groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
 
@@ -57,7 +84,7 @@ const Cube = () => {
     const dx = e.clientX - prev.current.x;
     const dy = e.clientY - prev.current.y;
 
-    const rotationSpeed = 0.01;
+    const rotationSpeed = 0.004;
 
     // rotation sur les axes globaux, pas locaux
     groupRef.current.rotateOnWorldAxis(axisY, dx * rotationSpeed);
@@ -94,14 +121,32 @@ const Cube = () => {
         <meshStandardMaterial color="orange" />
       </mesh> */}
 
-      <mesh castShadow receiveShadow>
+      {/* <mesh castShadow receiveShadow>
         <boxGeometry args={[4, 4, 4]} />
         <meshStandardMaterial
           metalness={0.85}
           roughness={0.15}
           color={"#4A919E"}
         />
-      </mesh>
+      </mesh> */}
+
+      <RoundedBox
+        // ref={boxRef}
+        args={[5.2, 5.2, 5.2]}
+        radius={0.05}
+        smoothness={2}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color="#4A919E"
+          //   map={albedo}
+          //   normalMap={normal}
+          //   roughnessMap={roughness}
+          //   aoMap={ao}
+          //   metalness={0}
+        />
+      </RoundedBox>
     </group>
   );
 };
