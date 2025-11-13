@@ -7,12 +7,18 @@ const Scene = () => {
 
   return (
     <>
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[5, 5, 5]} intensity={1.2} />
-      <directionalLight position={[-5, -5, -5]} intensity={0.5} />
-
+      <ambientLight intensity={1} color={"#ffffff"} />
+      <directionalLight
+        position={[5, 5, 5]}
+        intensity={1.0}
+        color={"#ffffff"}
+      />
+      <directionalLight
+        position={[-5, 2, -5]}
+        intensity={1}
+        color={"#ffffff"}
+      />
       <Cube />
-
       <ContactShadows
         position={[0, -5.6, 0]}
         opacity={0.7}
