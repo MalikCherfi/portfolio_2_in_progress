@@ -1,8 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
-import { useTexture } from "@react-three/drei";
 import { RoundedBox } from "@react-three/drei";
 
 const Cube = () => {
@@ -14,25 +13,6 @@ const Cube = () => {
   const setReset = useCubeStore((state) => state.setReset);
   const clock = useRef(new THREE.Clock());
   const setBounceY = useCubeStore((state) => state.setBounceY);
-
-  const textures = useTexture({
-    normal: "/Concrete030_1K-JPG_NormalDX.jpg",
-    roughness: "/Concrete030_1K-JPG_Roughness.jpg",
-    ao: "/Concrete030_1K-JPG_AmbientOcclusion.jpg",
-  });
-
-  // --- config commune pour toutes les textures ---
-  useEffect(() => {
-    // 1) Pas de répétition : clamp
-    [textures.normal, textures.roughness, textures.ao].forEach((tex) => {
-      if (!tex) return;
-      tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-      tex.repeat.set(0.08, 0.08); // tweak cette valeur pour agrandir/réduire
-      tex.offset.set(0, 0);
-      tex.center.set(0.5, 0.5);
-      tex.anisotropy = 8;
-    });
-  }, [textures]);
 
   const initialPosition = new THREE.Vector3(0, 0, 0);
   const initialQuaternion = new THREE.Quaternion();
@@ -146,13 +126,10 @@ const Cube = () => {
         receiveShadow
       >
         <meshStandardMaterial
-          color="#4A919E"
-          normalMap={textures.normal}
-          roughnessMap={textures.roughness}
-          aoMap={textures.ao}
-          normalScale={new THREE.Vector2(3, 3)}
-          roughness={0.4}
-          metalness={0.1}
+          color="#08C5D1"
+          emissive="#08C5D1"
+          roughness={1}
+          metalness={0}
         />
       </RoundedBox>
     </group>
