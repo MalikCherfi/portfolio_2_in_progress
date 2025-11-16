@@ -148,8 +148,8 @@ const Cube = () => {
       <RoundedBox
         ref={boxRef}
         args={[5.2, 5.2, 5.2]}
-        radius={0.05}
-        smoothness={2}
+        radius={0.04}
+        smoothness={4}
         castShadow
         receiveShadow
       >
