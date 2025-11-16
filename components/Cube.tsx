@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, Text } from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -13,6 +14,8 @@ const Cube = () => {
   const setReset = useCubeStore((state) => state.setReset);
   const clock = useRef(new THREE.Clock());
   const setBounceY = useCubeStore((state) => state.setBounceY);
+  const ao = useTexture("/ao.png");
+  const boxRef = useRef<THREE.Mesh>(null!);
 
   const initialPosition = new THREE.Vector3(0, 0, 0);
   const initialQuaternion = new THREE.Quaternion();
@@ -56,6 +59,18 @@ const Cube = () => {
       }
     }
   });
+
+  useEffect(() => {
+    if (!boxRef.current) return;
+
+    const geo = boxRef.current.geometry;
+
+    // Dupliquer UV → uv2
+    geo.setAttribute(
+      "uv2",
+      new THREE.BufferAttribute(geo.attributes.uv.array, 2)
+    );
+  }, []);
 
   const onPointerDown = (e: any) => {
     setIsDragging(true);
@@ -117,8 +132,21 @@ const Cube = () => {
           color={"#4A919E"}
         />
       </mesh> */}
-
+      <Text
+        position={[0, 0, 2.61]} // face avant
+        rotation={[0, 0, 0]}
+        fontSize={0.4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={4.8} // largeur maximale = presque la largeur du cube
+        textAlign="center"
+      >
+        Ceci est un texte long qui va se répartir sur plusieurs lignes sans
+        dépasser de la face du cube.
+      </Text>
       <RoundedBox
+        ref={boxRef}
         args={[5.2, 5.2, 5.2]}
         radius={0.05}
         smoothness={2}
@@ -126,10 +154,12 @@ const Cube = () => {
         receiveShadow
       >
         <meshStandardMaterial
-          color="#FF4F00"
-          emissive="#FF4F00"
-          roughness={1}
-          metalness={1}
+          color="#4A919E"
+          emissive="#4A919E"
+          roughness={0.55}
+          metalness={0}
+          aoMap={ao}
+          aoMapIntensity={1.2}
         />
       </RoundedBox>
     </group>
