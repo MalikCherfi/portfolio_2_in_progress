@@ -22,7 +22,7 @@ export default function Home() {
         shadows
         camera={{ position: [0, 1, 20], fov: 45 }}
         gl={{ antialias: true }}
-        style={{ background: "#FFBF66" }}
+        style={{ background: "#EBACA2" }}
       >
         <Scene />
       </Canvas>
