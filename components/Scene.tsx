@@ -2,6 +2,7 @@ import { ContactShadows } from "@react-three/drei";
 import Cube from "./Cube";
 import { useCubeStore } from "@/stores/cubeStore";
 import * as THREE from "three";
+import BackgroundGeometry from "./BackgroundGeometry";
 
 const Scene = () => {
   const bounceY = useCubeStore((state) => state.bounceY);
@@ -33,11 +34,13 @@ const Scene = () => {
 
       <Cube />
 
+      <BackgroundGeometry />
+
       <ContactShadows
         position={[0, -6, 0]}
         opacity={0.6}
-        width={1.4 + bounceY}
-        height={1.4 + bounceY}
+        width={3 + bounceY}
+        height={3 + bounceY}
         blur={4}
         far={15}
       />
