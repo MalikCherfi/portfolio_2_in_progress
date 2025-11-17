@@ -18,7 +18,7 @@ const BackgroundGeometry = () => {
           -3 - Math.random() * 8, // entre -3 et -11
         ] as [number, number, number],
         scale: Math.random() * 0.4 + 0.1,
-        color: Math.random() > 0.5 ? "#ffffff" : "#ffe8e8",
+        color: Math.random() > 0.5 ? "#B6465F" : "#CE6A6B",
         type: Math.random() > 0.7 ? "sphere" : "cube",
       });
     }
