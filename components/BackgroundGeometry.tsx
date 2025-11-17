@@ -48,7 +48,7 @@ const BackgroundGeometry = () => {
               roughness={1}
               metalness={0}
               transparent
-              opacity={0.6}
+              opacity={0.9}
             />
           </mesh>
         </Float>
