@@ -34,7 +34,7 @@ const Scene = () => {
       <Cube />
 
       <ContactShadows
-        position={[0, -5.6, 0]}
+        position={[0, -6, 0]}
         opacity={0.6}
         width={1.4 + bounceY}
         height={1.4 + bounceY}
