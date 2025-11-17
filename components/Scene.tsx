@@ -37,7 +37,7 @@ const Scene = () => {
       <BackgroundGeometry />
 
       <ContactShadows
-        position={[0, -6, 0]}
+        position={[0, -5, 0]}
         opacity={0.6}
         width={3 + bounceY}
         height={3 + bounceY}
