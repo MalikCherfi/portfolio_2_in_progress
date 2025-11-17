@@ -45,6 +45,8 @@ const BackgroundGeometry = () => {
               color={item.color}
               emissive={item.color}
               emissiveIntensity={0.3}
+              roughness={0.8}
+              metalness={0}
             />
           </mesh>
         </Float>
