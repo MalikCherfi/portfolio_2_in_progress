@@ -10,7 +10,7 @@ export default function Home() {
   const setReset = useCubeStore((state) => state.setReset);
 
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen bg-gradient-to-t from-[#CE6A6B] to-[#EBACA2]">
       <div className="absolute top-5 left-5 z-10 flex gap-2">
         <button
           onClick={() => setReset(true)}
@@ -31,7 +31,6 @@ export default function Home() {
           gl.toneMappingExposure = 1.2;
         }}
         dpr={[1, 2]} // performance
-        style={{ background: "#CE6A6B" }}
       >
         <Scene />
       </Canvas>
