@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import Scene from "../components/Scene";
 import { useCubeStore } from "@/stores/cubeStore";
 import { RotateCcw } from "lucide-react";
+import * as THREE from "three";
 
 export default function Home() {
   const setReset = useCubeStore((state) => state.setReset);
@@ -21,8 +22,16 @@ export default function Home() {
       <Canvas
         shadows
         camera={{ position: [0, 1, 20], fov: 45 }}
-        gl={{ antialias: true }}
-        style={{ background: "#EBACA2" }}
+        gl={{
+          antialias: true,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
+        onCreated={({ gl }) => {
+          gl.toneMappingExposure = 1.2;
+        }}
+        dpr={[1, 2]} // performance
+        style={{ background: "#CE6A6B" }}
       >
         <Scene />
       </Canvas>
