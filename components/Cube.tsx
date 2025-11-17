@@ -154,8 +154,8 @@ const Cube = () => {
         receiveShadow
       >
         <meshStandardMaterial
-          color="#212E53"
-          emissive="#212E53"
+          color="#B6465F"
+          emissive="#B6465F"
           roughness={0.55}
           metalness={0}
           aoMap={ao}
