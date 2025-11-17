@@ -160,6 +160,7 @@ const Cube = () => {
           metalness={0}
           aoMap={ao}
           aoMapIntensity={1.2}
+          dithering
         />
       </RoundedBox>
     </group>
