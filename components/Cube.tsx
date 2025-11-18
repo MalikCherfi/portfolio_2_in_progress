@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
@@ -17,11 +17,11 @@ const Cube = () => {
   const ao = useTexture("/ao.png");
   const boxRef = useRef<THREE.Mesh>(null!);
 
-  const initialPosition = new THREE.Vector3(0, 0, 0);
-  const initialQuaternion = new THREE.Quaternion();
+  const initialPosition = useMemo(() => new THREE.Vector3(0, 0, 0), []);
+  const initialQuaternion = useMemo(() => new THREE.Quaternion(), []);
 
-  const axisX = new THREE.Vector3(1, 0, 0);
-  const axisY = new THREE.Vector3(0, 1, 0);
+  const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
+  const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
 
   const timeOffset = useRef(0);
 
