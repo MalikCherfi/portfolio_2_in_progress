@@ -21,7 +21,7 @@ export default function Home() {
       </div>
       <Canvas
         shadows
-        camera={{ position: [0, 1, 20], fov: 45 }}
+        camera={{ position: [0, 0, 20], fov: 45 }}
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
