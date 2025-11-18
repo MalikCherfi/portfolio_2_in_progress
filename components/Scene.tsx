@@ -3,7 +3,6 @@ import Cube from "./Cube";
 import { useCubeStore } from "@/stores/cubeStore";
 import * as THREE from "three";
 import BackgroundGeometry from "./BackgroundGeometry";
-import { EffectComposer, DepthOfField } from "@react-three/postprocessing";
 import { useMemo } from "react";
 
 const Scene = () => {
@@ -41,14 +40,6 @@ const Scene = () => {
       <Cube />
 
       <BackgroundGeometry />
-
-      <EffectComposer multisampling={0}>
-        <DepthOfField
-          focusDistance={0} // 👈 tu touches PAS
-          focalLength={0.015} // 👈 plus petit = cube encore + net
-          bokehScale={2}
-        />
-      </EffectComposer>
 
       <ContactShadows
         position={[0, -5, 0]}
