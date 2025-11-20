@@ -74,7 +74,7 @@ const Cube = () => {
   }, []);
 
   const onPointerDown = (e: any) => {
-     e.stopPropagation();
+    e.stopPropagation();
     setIsDragging(true);
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
