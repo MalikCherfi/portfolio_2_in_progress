@@ -2,8 +2,9 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
-import { RoundedBox, Text } from "@react-three/drei";
+import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
+import CubeText from "./CubeText";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -73,6 +74,7 @@ const Cube = () => {
   }, []);
 
   const onPointerDown = (e: any) => {
+     e.stopPropagation();
     setIsDragging(true);
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
@@ -117,34 +119,15 @@ const Cube = () => {
       onPointerCancel={onPointerUp}
     >
       {/* <mesh
-        position={[0, 0, 0.71]} // légèrement devant la face avant
+        position={[0, 0, 2.61]} // légèrement devant la face avant
         onClick={(e) => console.log("Bouton cliqué !")}
       >
         <planeGeometry args={[0.8, 0.4]} />
         <meshStandardMaterial color="orange" />
       </mesh> */}
 
-      {/* <mesh castShadow receiveShadow>
-        <boxGeometry args={[4, 4, 4]} />
-        <meshStandardMaterial
-          metalness={0.85}
-          roughness={0.15}
-          color={"#4A919E"}
-        />
-      </mesh> */}
-      <Text
-        position={[0, 0, 2.61]} // face avant
-        rotation={[0, 0, 0]}
-        fontSize={0.4}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={4.8} // largeur maximale = presque la largeur du cube
-        textAlign="center"
-      >
-        Ceci est un texte long qui va se répartir sur plusieurs lignes sans
-        dépasser de la face du cube.
-      </Text>
+      <CubeText />
+
       <RoundedBox
         ref={boxRef}
         args={[5.2, 5.2, 5.2]}
