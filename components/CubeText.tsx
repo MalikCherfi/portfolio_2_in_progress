@@ -38,7 +38,7 @@ const CubeText = () => {
         onPointerMove={onPointerMove}
         onClick={onClick(() => console.log("CLICK FRONT"))}
       >
-        BIENVENUE
+        WELCOME
       </Text>
       {/* Face arrière */}
       <Text
