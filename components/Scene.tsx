@@ -42,7 +42,7 @@ const Scene = () => {
 
       <EffectComposer multisampling={0}>
         <Bloom
-          intensity={2}
+          intensity={1.5}
           luminanceThreshold={0}
           luminanceSmoothing={0.9}
           height={20}
