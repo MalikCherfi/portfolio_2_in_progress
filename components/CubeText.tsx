@@ -1,6 +1,30 @@
 import { Text } from "@react-three/drei";
+import { useState, useRef } from "react";
 
 const CubeText = () => {
+  const [isDragging, setIsDragging] = useState(false);
+  const dragThreshold = 3; // pixels
+
+  const start = useRef({ x: 0, y: 0 });
+
+  const onPointerDown = (e) => {
+    start.current = { x: e.clientX, y: e.clientY };
+    setIsDragging(false);
+  };
+
+  const onPointerMove = (e) => {
+    const dx = e.clientX - start.current.x;
+    const dy = e.clientY - start.current.y;
+    if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) {
+      setIsDragging(true);
+    }
+  };
+
+  const onClick = (callback) => (e) => {
+    e.stopPropagation();
+    if (!isDragging) callback(e); // seulement si ce n’était pas un drag
+  };
+
   return (
     <>
       <Text
@@ -10,7 +34,9 @@ const CubeText = () => {
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        onPointerDown={() => console.log("CLICK FRONT")}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onClick={onClick(() => console.log("CLICK FRONT"))}
       >
         BIENVENUE
       </Text>
@@ -22,7 +48,9 @@ const CubeText = () => {
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        onPointerDown={() => console.log("CLICK BACK")}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onClick={onClick(() => console.log("CLICK BACK"))}
       >
         CONTACT
       </Text>
@@ -34,7 +62,9 @@ const CubeText = () => {
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        onPointerDown={() => console.log("CLICK RIGHT")}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onClick={onClick(() => console.log("CLICK RIGHT"))}
       >
         SKILLS
       </Text>
@@ -46,7 +76,9 @@ const CubeText = () => {
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        onPointerDown={() => console.log("CLICK LEFT")}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onClick={onClick(() => console.log("CLICK LEFT"))}
       >
         ABOUT ME
       </Text>
