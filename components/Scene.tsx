@@ -4,7 +4,6 @@ import { useCubeStore } from "@/stores/cubeStore";
 import * as THREE from "three";
 import BackgroundGeometry from "./BackgroundGeometry";
 import { useMemo } from "react";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
 const Scene = () => {
   const bounceY = useCubeStore((state) => state.bounceY);
@@ -39,15 +38,6 @@ const Scene = () => {
       <primitive object={backLight} />
 
       <Cube />
-
-      <EffectComposer multisampling={0}>
-        <Bloom
-          intensity={1.5}
-          luminanceThreshold={0}
-          luminanceSmoothing={0.9}
-          height={20}
-        />
-      </EffectComposer>
 
       <BackgroundGeometry />
 
