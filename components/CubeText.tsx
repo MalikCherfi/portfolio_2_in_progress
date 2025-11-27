@@ -25,9 +25,34 @@ const CubeText = () => {
     if (!isDragging) callback(e); // seulement si ce n’était pas un drag
   };
 
+  const radius = 3.5;
+  const height = 6;
+
+  // sommets de la base (y = -height/2)
+  const basePoints = [
+    [-radius, -height / 2, -radius],
+    [radius, -height / 2, -radius],
+    [radius, -height / 2, radius],
+    [-radius, -height / 2, radius],
+  ];
+
+  // sommet
+  const top = [0, height / 2, 0];
+
+  // Face avant = triangle (top, basePoints[2], basePoints[3])
+  const faceVertices = [top, basePoints[2], basePoints[3]];
+
+  // centroid
+  const centroid = faceVertices
+    .reduce(
+      (acc, v) => [acc[0] + v[0], acc[1] + v[1], acc[2] + v[2]],
+      [0, 0, 0]
+    )
+    .map((c) => c / 3);
+
   return (
     <>
-      <Text
+      {/* <Text
         position={[0, 0, 2.61]}
         rotation={[0, 0, 0]}
         fontSize={0.42}
@@ -39,9 +64,19 @@ const CubeText = () => {
         onClick={onClick(() => console.log("CLICK FRONT"))}
       >
         WELCOME
+      </Text> */}
+      <Text
+        position={centroid}
+        fontSize={0.42}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+
+      >
+        WELCOME
       </Text>
       {/* Face arrière */}
-      <Text
+      {/* <Text
         position={[0, 0, -2.61]}
         rotation={[0, Math.PI, 0]} // inversé pour être lisible depuis l'extérieur
         fontSize={0.42}
@@ -53,9 +88,9 @@ const CubeText = () => {
         onClick={onClick(() => console.log("CLICK BACK"))}
       >
         CONTACT
-      </Text>
+      </Text> */}
       {/* Face droite */}
-      <Text
+      {/* <Text
         position={[2.61, 0, 0]}
         rotation={[0, -Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
         fontSize={0.42}
@@ -67,9 +102,9 @@ const CubeText = () => {
         onClick={onClick(() => console.log("CLICK RIGHT"))}
       >
         SKILLS
-      </Text>
+      </Text> */}
       {/* Face gauche */}
-      <Text
+      {/* <Text
         position={[-2.61, 0, 0]}
         rotation={[0, Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
         fontSize={0.42}
@@ -81,7 +116,7 @@ const CubeText = () => {
         onClick={onClick(() => console.log("CLICK LEFT"))}
       >
         ABOUT ME
-      </Text>
+      </Text> */}
     </>
   );
 };
