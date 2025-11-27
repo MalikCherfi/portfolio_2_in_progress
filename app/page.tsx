@@ -5,12 +5,9 @@ import Scene from "../components/Scene";
 import { useCubeStore } from "@/stores/cubeStore";
 import { RotateCcw } from "lucide-react";
 import * as THREE from "three";
-import { useRef } from "react";
-import CameraController from "@/components/CameraController";
 
 export default function Home() {
   const setReset = useCubeStore((state) => state.setReset);
-  const cameraRef = useRef();
 
   return (
     <div className="w-screen h-screen bg-gradient-to-t from-[#CE6A6B] to-[#EBACA2]">
@@ -36,7 +33,6 @@ export default function Home() {
         dpr={[1, 2]} // performance
       >
         <Scene />
-        <CameraController cameraRef={cameraRef} />
       </Canvas>
     </div>
   );
