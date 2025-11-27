@@ -143,7 +143,7 @@ const Cube = () => {
           roughness={0.55}
           metalness={0}
           aoMap={ao}
-          aoMapIntensity={1.2}
+          aoMapIntensity={0.1}
           dithering
         />
       </RoundedBox>
