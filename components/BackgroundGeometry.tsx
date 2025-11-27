@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
-import { Float } from "@react-three/drei";
+import { Float, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 type ItemType = "cube" | "sphere";
@@ -27,7 +27,7 @@ const BackgroundGeometry = () => {
           position: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, z],
           scale: Math.random() * 0.4 + 0.1,
           color: Math.random() > 0.5 ? "#B6465F" : "#CE6A6B",
-          type: Math.random() > 0.7 ? "sphere" : "cube",
+          type: z > 4 ? "sphere" : Math.random() > 0.7 ? "sphere" : "cube",
           velocity: { x: 0, y: 0 },
         };
       }) as arrayItem[]
@@ -167,38 +167,59 @@ const BackgroundGeometry = () => {
 
   return (
     <>
-      {items.map((item, index) => (
-        <Float
-          key={index}
-          speed={1}
-          rotationIntensity={0.3}
-          floatIntensity={0.5}
-        >
-          <mesh
-            position={item.position}
-            scale={item.scale}
-            onPointerDown={(e) => onPointerDown(e, index)}
-            onPointerMove={onPointerMove}
-            onPointerUp={(e) => endDrag(e)}
-            onPointerLeave={(e) => {
-              // when pointer leaves the mesh we want to end drag but keep inertia
-              endDrag(e);
-            }}
-            onPointerCancel={(e) => endDrag(e)}
+      {items.map((item, index) => {
+        const [x, y, z] = item.position;
+        const isInFrontOfCube = z > 4 && x > -2 && x < 2 && y > -2 && y < 2;
+        return (
+          <Float
+            key={index}
+            speed={1}
+            rotationIntensity={0.3}
+            floatIntensity={0.5}
           >
-            {geometryMap[item.type]}
-            <meshStandardMaterial
-              color={item.color}
-              emissive={item.color}
-              emissiveIntensity={0.3}
-              roughness={1}
-              metalness={0}
-              transparent
-              opacity={0.9}
-            />
-          </mesh>
-        </Float>
-      ))}
+            <mesh
+              position={item.position}
+              scale={item.scale}
+              castShadow={false}
+              receiveShadow={false}
+              onPointerDown={(e) => onPointerDown(e, index)}
+              onPointerMove={onPointerMove}
+              onPointerUp={(e) => endDrag(e)}
+              onPointerLeave={(e) => {
+                // when pointer leaves the mesh we want to end drag but keep inertia
+                endDrag(e);
+              }}
+              onPointerCancel={(e) => endDrag(e)}
+            >
+              {geometryMap[item.type]}
+              {isInFrontOfCube ? (
+                <MeshTransmissionMaterial
+                  color={item.color}
+                  emissive={item.color}
+                  emissiveIntensity={0.3}
+                  transmission={0.8} // pas 1 complet
+                  thickness={0.3} // un peu moins épais
+                  roughness={0.2} // léger flou
+                  chromaticAberration={0} // désactivé
+                  backside={false} // pas de backface
+                  samples={2} // moins d’échantillons
+                  // transmissionSampler={true} // réutilise le buffer pour tous
+                />
+              ) : (
+                <meshStandardMaterial
+                  color={item.color}
+                  emissive={item.color}
+                  emissiveIntensity={0.3}
+                  roughness={1}
+                  metalness={0}
+                  transparent
+                  opacity={0.9}
+                />
+              )}
+            </mesh>
+          </Float>
+        );
+      })}
     </>
   );
 };
