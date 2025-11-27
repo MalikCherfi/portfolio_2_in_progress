@@ -4,6 +4,7 @@ import { useCubeStore } from "@/stores/cubeStore";
 import * as THREE from "three";
 import BackgroundGeometry from "./BackgroundGeometry";
 import { useMemo } from "react";
+import Geometries from "./Geometries";
 
 const Scene = () => {
   const bounceY = useCubeStore((state) => state.bounceY);
@@ -37,7 +38,8 @@ const Scene = () => {
       <primitive object={rightLight} />
       <primitive object={backLight} />
 
-      <Cube />
+      {/* <Cube /> */}
+      <Geometries />
 
       <BackgroundGeometry />
 
