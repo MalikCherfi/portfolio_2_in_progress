@@ -3,11 +3,18 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, Sphere, Cone, Octahedron } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
 
-const Cube = () => {
+const COMPONENTS = {
+  RoundedBox,
+  Sphere,
+  Cone,
+  Octahedron,
+};
+
+const Cube = ({ geo }) => {
   const groupRef = useRef<THREE.Group | null>(null);
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
@@ -18,6 +25,7 @@ const Cube = () => {
   const setBounceY = useCubeStore((state) => state.setBounceY);
   const ao = useTexture("/ao.png");
   const boxRef = useRef<THREE.Mesh>(null!);
+  const Component = COMPONENTS[geo.component];
 
   const initialPosition = useMemo(() => new THREE.Vector3(0, 0, 0), []);
   const initialQuaternion = useMemo(() => new THREE.Quaternion(), []);
@@ -65,12 +73,13 @@ const Cube = () => {
   useEffect(() => {
     if (!boxRef.current) return;
 
-    const geo = boxRef.current.geometry;
+    const geometry = boxRef.current.geometry;
 
-    // Dupliquer UV → uv2
-    geo.setAttribute(
+    if (!geometry || !geometry.attributes?.uv) return;
+
+    geometry.setAttribute(
       "uv2",
-      new THREE.BufferAttribute(geo.attributes.uv.array, 2)
+      new THREE.BufferAttribute(geometry.attributes.uv.array, 2)
     );
   }, []);
 
@@ -122,6 +131,8 @@ const Cube = () => {
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}
       onPointerCancel={onPointerUp}
+      position={geo.position}
+      rotation={geo.rotation}
     >
       {/* <mesh
         position={[0, 0, 2.61]} // légèrement devant la face avant
@@ -131,9 +142,9 @@ const Cube = () => {
         <meshStandardMaterial color="orange" />
       </mesh> */}
 
-      <CubeText />
+      {geo.type === "cone" && <CubeText />}
 
-      <RoundedBox
+      {/* <RoundedBox
         ref={boxRef}
         args={[5.2, 5.2, 5.2]}
         radius={0.04}
@@ -150,7 +161,22 @@ const Cube = () => {
           aoMapIntensity={1.2}
           dithering
         />
-      </RoundedBox>
+      </RoundedBox> */}
+
+      <Component
+        ref={boxRef}
+        args={geo.args}
+        radius={geo.radius}
+        smoothness={geo.smoothness}
+        castShadow
+        receiveShadow
+      >
+        <meshStandardMaterial
+          color={geo.color}
+          roughness={0.5}
+          metalness={0.1}
+        />
+      </Component>
     </group>
   );
 };
