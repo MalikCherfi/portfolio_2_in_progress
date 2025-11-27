@@ -139,7 +139,7 @@ const Cube = () => {
       >
         <meshStandardMaterial
           color="#B6465F"
-          emissive="#B6465F"
+          // emissive="#B6465F"
           roughness={0.55}
           metalness={0}
           aoMap={ao}
