@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
+import { useCanvasStore } from "@/stores/canvasStore";
 import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
@@ -11,8 +12,8 @@ const Cube = () => {
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const reset = useCubeStore((state) => state.reset);
-  const setReset = useCubeStore((state) => state.setReset);
+  const { reset, setReset } = useCubeStore();
+  const { setIsDraggingObject } = useCanvasStore();
   const clock = useRef(new THREE.Clock());
   const setBounceY = useCubeStore((state) => state.setBounceY);
   const ao = useTexture("/ao.png");
@@ -76,6 +77,7 @@ const Cube = () => {
   const onPointerDown = (e: any) => {
     e.stopPropagation();
     setIsDragging(true);
+    setIsDraggingObject(true);
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
     try {
@@ -84,6 +86,7 @@ const Cube = () => {
   };
 
   const onPointerMove = (e: any) => {
+    e.stopPropagation();
     if (!isDragging || !groupRef.current) return;
 
     const dx = e.clientX - prev.current.x;
@@ -103,7 +106,9 @@ const Cube = () => {
   };
 
   const onPointerUp = (e: any) => {
+    e.stopPropagation();
     setIsDragging(false);
+    setIsDraggingObject(false);
     try {
       (e.target as Element).releasePointerCapture?.(e.pointerId);
     } catch {}
