@@ -25,18 +25,23 @@ const CubeText = () => {
     if (!isDragging) callback(e); // seulement si ce n’était pas un drag
   };
 
+  const fontProps = {
+    font: "/fonts/Iceberg-Regular.ttf",
+    fontSize: 0.42,
+    color: "#ffffff",
+    anchorX: "center",
+    anchorY: "middle",
+  };
+
   return (
     <>
       <Text
         position={[0, 0, 2.61]}
         rotation={[0, 0, 0]}
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick(() => console.log("CLICK FRONT"))}
+        {...fontProps}
       >
         WELCOME
       </Text>
@@ -44,13 +49,10 @@ const CubeText = () => {
       <Text
         position={[0, 0, -2.61]}
         rotation={[0, Math.PI, 0]} // inversé pour être lisible depuis l'extérieur
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick(() => console.log("CLICK BACK"))}
+        {...fontProps}
       >
         CONTACT
       </Text>
@@ -58,13 +60,10 @@ const CubeText = () => {
       <Text
         position={[2.61, 0, 0]}
         rotation={[0, -Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick(() => console.log("CLICK RIGHT"))}
+        {...fontProps}
       >
         SKILLS
       </Text>
@@ -72,13 +71,10 @@ const CubeText = () => {
       <Text
         position={[-2.61, 0, 0]}
         rotation={[0, Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick(() => console.log("CLICK LEFT"))}
+        {...fontProps}
       >
         ABOUT ME
       </Text>
