@@ -1,9 +1,12 @@
 import { Text } from "@react-three/drei";
 import { useState, useRef } from "react";
+import { rotateToFace } from "@/utils/rotateToFace";
+import { useCubeStore } from "@/stores/cubeStore";
 
-const CubeText = () => {
+const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragThreshold = 3; // pixels
+  const { setRotate } = useCubeStore();
 
   const start = useRef({ x: 0, y: 0 });
 
@@ -40,7 +43,9 @@ const CubeText = () => {
         rotation={[0, 0, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK FRONT"))}
+        onClick={onClick(() =>
+          rotateToFace({ face: "front", targetQuaternion, setRotate })
+        )}
         {...fontProps}
       >
         WELCOME
@@ -51,7 +56,9 @@ const CubeText = () => {
         rotation={[0, Math.PI, 0]} // inversé pour être lisible depuis l'extérieur
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK BACK"))}
+        onClick={onClick(() =>
+          rotateToFace({ face: "back", targetQuaternion, setRotate })
+        )}
         {...fontProps}
       >
         CONTACT
@@ -62,7 +69,9 @@ const CubeText = () => {
         rotation={[0, -Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK RIGHT"))}
+        onClick={onClick(() =>
+          rotateToFace({ face: "right", targetQuaternion, setRotate })
+        )}
         {...fontProps}
       >
         SKILLS
@@ -73,7 +82,9 @@ const CubeText = () => {
         rotation={[0, Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK LEFT"))}
+        onClick={onClick(() =>
+          rotateToFace({ face: "left", targetQuaternion, setRotate })
+        )}
         {...fontProps}
       >
         ABOUT ME
