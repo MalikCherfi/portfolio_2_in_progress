@@ -7,13 +7,13 @@ import { RotateCcw } from "lucide-react";
 import * as THREE from "three";
 
 export default function Home() {
-  const setReset = useCubeStore((state) => state.setReset);
+  const setReset = useCubeStore((state) => state.setRotate);
 
   return (
     <div className="w-screen h-screen bg-gradient-to-t from-[#CE6A6B] to-[#EBACA2]">
       <div className="absolute top-5 left-5 z-10 flex gap-2">
         <button
-          onClick={() => setReset(true)}
+          onClick={() => setReset({ reset: true, target_face: false })}
           className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
         >
           <RotateCcw size={22} />
