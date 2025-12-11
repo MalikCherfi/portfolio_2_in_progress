@@ -1,16 +1,21 @@
 import { create } from "zustand";
 
-type CubeStore = {
+type CubeRotate = {
   reset: boolean;
-  setReset: (value: boolean) => void;
+  target_face: boolean;
+};
+
+type CubeStore = {
+  rotate: CubeRotate;
+  setRotate: (value: CubeRotate) => void;
   bounceY: number;
   setBounceY: (y: number) => void;
 };
 
 export const useCubeStore = create<CubeStore>((set) => ({
-  reset: false,
-  setReset: (value) => set({ reset: value }),
+  rotate: { reset: false, target_face: false },
+  setRotate: (value) => set({ rotate: value }),
 
   bounceY: 0,
-  setBounceY: (y: number) => set({ bounceY: y }),
+  setBounceY: (y) => set({ bounceY: y }),
 }));
