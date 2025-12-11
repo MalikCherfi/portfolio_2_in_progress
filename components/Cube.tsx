@@ -11,14 +11,18 @@ const Cube = () => {
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const { reset, setReset } = useCubeStore();
+  const { rotate, setRotate } = useCubeStore();
   const clock = useRef(new THREE.Clock());
   const setBounceY = useCubeStore((state) => state.setBounceY);
   const ao = useTexture("/ao.png");
   const boxRef = useRef<THREE.Mesh>(null!);
 
   const initialPosition = useMemo(() => new THREE.Vector3(0, 0, 0), []);
-  const initialQuaternion = useMemo(() => new THREE.Quaternion(), []);
+  // Orientation de base (ne jamais modifier)
+  const defaultQuaternion = useRef(new THREE.Quaternion());
+
+  // Orientation cible (quand tu cliques sur une face)
+  const targetQuaternion = useRef(new THREE.Quaternion());
 
   const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
@@ -31,7 +35,7 @@ const Cube = () => {
     const elapsed = clock.current.getElapsedTime();
     const t = elapsed - timeOffset.current; // on applique l'offset temporel
 
-    if (!reset) {
+    if (!rotate.reset && !rotate.target_face) {
       // 🎯 effet bounce vertical fluide
       const bounce = Math.sin(t * 2) * 0.2;
       groupRef.current.position.y = bounce;
@@ -46,16 +50,16 @@ const Cube = () => {
     } else {
       // Animation fluide vers la position initiale
       groupRef.current.position.lerp(initialPosition, 0.1);
-      groupRef.current.quaternion.slerp(initialQuaternion, 0.1);
+      groupRef.current.quaternion.slerp(rotate.reset ? defaultQuaternion.current : targetQuaternion.current, 0.1);
 
       // Stop reset quand on est proche
       if (
         groupRef.current.position.distanceTo(initialPosition) < 0.01 &&
-        groupRef.current.quaternion.angleTo(initialQuaternion) < 0.01
+        groupRef.current.quaternion.angleTo(rotate.reset ? defaultQuaternion.current : targetQuaternion.current) < 0.01
       ) {
         // 🔄 Quand le reset est fini, on recale le bounce ici :
         timeOffset.current = clock.current.getElapsedTime();
-        setReset(false);
+        setRotate({ reset: false, target_face: false });
       }
     }
   });
@@ -127,7 +131,7 @@ const Cube = () => {
         <meshStandardMaterial color="orange" />
       </mesh> */}
 
-      <CubeText />
+      <CubeText targetQuaternion={targetQuaternion} />
 
       <RoundedBox
         ref={boxRef}
