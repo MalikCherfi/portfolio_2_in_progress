@@ -11,13 +11,12 @@ const Cube = () => {
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const { rotate, setRotate } = useCubeStore();
+  const { rotate, setRotate, zoomCamera } = useCubeStore();
   const clock = useRef(new THREE.Clock());
   const setBounceY = useCubeStore((state) => state.setBounceY);
   const ao = useTexture("/ao.png");
   const boxRef = useRef<THREE.Mesh>(null!);
 
-  const initialPosition = useMemo(() => new THREE.Vector3(0, 0, 0), []);
   // Orientation de base (ne jamais modifier)
   const defaultQuaternion = useRef(new THREE.Quaternion());
 
@@ -33,35 +32,43 @@ const Cube = () => {
     if (!groupRef.current) return;
 
     const elapsed = clock.current.getElapsedTime();
-    const t = elapsed - timeOffset.current; // on applique l'offset temporel
+    const t = elapsed - timeOffset.current;
+
+    // Position Y cible : si zoomCamera → remonter à 1.5, sinon bounce
+    const targetY = zoomCamera ? 0 : Math.sin(t * 2) * 0.2;
 
     if (!rotate.reset && !rotate.target_face) {
-      // 🎯 effet bounce vertical fluide
-      const bounce = Math.sin(t * 2) * 0.2;
-      groupRef.current.position.y = bounce;
-      setBounceY(bounce);
+      // Bouce uniquement si pas de rotation vers une face
+      groupRef.current.position.y +=
+        (targetY - groupRef.current.position.y) * 0.1;
 
-      // rotation + inertie
+      // Rotation par drag/inertie
       groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
       groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
-
       velocity.current.x *= 0.95;
       velocity.current.y *= 0.95;
     } else {
-      // Animation fluide vers la position initiale
-      groupRef.current.position.lerp(initialPosition, 0.1);
-      groupRef.current.quaternion.slerp(rotate.reset ? defaultQuaternion.current : targetQuaternion.current, 0.1);
+      // Animation fluide vers initial position + rotation cible
+      groupRef.current.position.lerp(new THREE.Vector3(0, targetY, 0), 0.1);
+      groupRef.current.quaternion.slerp(
+        rotate.reset ? defaultQuaternion.current : targetQuaternion.current,
+        0.1,
+      );
 
-      // Stop reset quand on est proche
       if (
-        groupRef.current.position.distanceTo(initialPosition) < 0.01 &&
-        groupRef.current.quaternion.angleTo(rotate.reset ? defaultQuaternion.current : targetQuaternion.current) < 0.01
+        groupRef.current.position.distanceTo(new THREE.Vector3(0, targetY, 0)) <
+          0.01 &&
+        groupRef.current.quaternion.angleTo(
+          rotate.reset ? defaultQuaternion.current : targetQuaternion.current,
+        ) < 0.01
       ) {
-        // 🔄 Quand le reset est fini, on recale le bounce ici :
         timeOffset.current = clock.current.getElapsedTime();
         setRotate({ reset: false, target_face: false });
       }
     }
+
+    // Update bounceY pour ContactShadows
+    setBounceY(groupRef.current.position.y);
   });
 
   useEffect(() => {
@@ -72,7 +79,7 @@ const Cube = () => {
     // Dupliquer UV → uv2
     geo.setAttribute(
       "uv2",
-      new THREE.BufferAttribute(geo.attributes.uv.array, 2)
+      new THREE.BufferAttribute(geo.attributes.uv.array, 2),
     );
   }, []);
 
