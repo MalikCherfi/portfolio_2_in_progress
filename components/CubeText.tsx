@@ -1,11 +1,14 @@
 import { Text } from "@react-three/drei";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
 import { rotateToFace } from "@/utils/rotateToFace";
 import { useCubeStore } from "@/stores/cubeStore";
 const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragThreshold = 5;
   const { setRotate, setZoomCamera } = useCubeStore();
+  const [fontSize, setFontSize] = useState(0.42); // taille initiale
+  const [targetFontSize, setTargetFontSize] = useState(0.42);
 
   const start = useRef({ x: 0, y: 0 });
 
@@ -29,6 +32,32 @@ const CubeText = ({ targetQuaternion }) => {
     }
   };
 
+  // Détecter la largeur de l'écran
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      if (w < 600) setTargetFontSize(0.25);
+      else if (w < 900) setTargetFontSize(0.35);
+      else setTargetFontSize(0.42);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Interpolation fluide chaque frame
+  useFrame(() => {
+    setFontSize((f) => f + (targetFontSize - f) * 0.1);
+  });
+
+  const fontProps = {
+    font: "/fonts/Iceberg-Regular.ttf",
+    fontSize,
+    color: "#ffffff",
+    anchorX: "center",
+    anchorY: "middle",
+  };
+
   return (
     <>
       <Text
@@ -36,11 +65,7 @@ const CubeText = ({ targetQuaternion }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("front")}
-        font="/fonts/Iceberg-Regular.ttf"
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
+        {...fontProps}
       >
         WELCOME
       </Text>
@@ -50,11 +75,7 @@ const CubeText = ({ targetQuaternion }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("back")}
-        font="/fonts/Iceberg-Regular.ttf"
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
+        {...fontProps}
       >
         CONTACT
       </Text>
@@ -64,11 +85,7 @@ const CubeText = ({ targetQuaternion }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("right")}
-        font="/fonts/Iceberg-Regular.ttf"
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
+        {...fontProps}
       >
         SKILLS
       </Text>
@@ -78,11 +95,7 @@ const CubeText = ({ targetQuaternion }) => {
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("left")}
-        font="/fonts/Iceberg-Regular.ttf"
-        fontSize={0.42}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
+        {...fontProps}
       >
         ABOUT ME
       </Text>
