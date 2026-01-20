@@ -2,11 +2,10 @@ import { Text } from "@react-three/drei";
 import { useState, useRef } from "react";
 import { rotateToFace } from "@/utils/rotateToFace";
 import { useCubeStore } from "@/stores/cubeStore";
-
 const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const dragThreshold = 3; // pixels
-  const { setRotate } = useCubeStore();
+  const dragThreshold = 5;
+  const { setRotate, setZoomCamera } = useCubeStore();
 
   const start = useRef({ x: 0, y: 0 });
 
@@ -18,74 +17,72 @@ const CubeText = ({ targetQuaternion }) => {
   const onPointerMove = (e) => {
     const dx = e.clientX - start.current.x;
     const dy = e.clientY - start.current.y;
-    if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) {
-      setIsDragging(true);
-    }
+    if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) setIsDragging(true);
   };
 
-  const onClick = (callback) => (e) => {
+  const onClick = (face) => (e) => {
     e.stopPropagation();
-    if (!isDragging) callback(e); // seulement si ce n’était pas un drag
-  };
-
-  const fontProps = {
-    font: "/fonts/Iceberg-Regular.ttf",
-    fontSize: 0.42,
-    color: "#ffffff",
-    anchorX: "center",
-    anchorY: "middle",
+    if (!isDragging) {
+      rotateToFace({ face, targetQuaternion, setRotate });
+      setRotate({ reset: false, target_face: true, face });
+      setZoomCamera(true); // zoom caméra vers 5
+    }
   };
 
   return (
     <>
       <Text
         position={[0, 0, 2.61]}
-        rotation={[0, 0, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() =>
-          rotateToFace({ face: "front", targetQuaternion, setRotate })
-        )}
-        {...fontProps}
+        onClick={onClick("front")}
+        font="/fonts/Iceberg-Regular.ttf"
+        fontSize={0.42}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
       >
         WELCOME
       </Text>
-      {/* Face arrière */}
       <Text
         position={[0, 0, -2.61]}
-        rotation={[0, Math.PI, 0]} // inversé pour être lisible depuis l'extérieur
+        rotation={[0, Math.PI, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() =>
-          rotateToFace({ face: "back", targetQuaternion, setRotate })
-        )}
-        {...fontProps}
+        onClick={onClick("back")}
+        font="/fonts/Iceberg-Regular.ttf"
+        fontSize={0.42}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
       >
         CONTACT
       </Text>
-      {/* Face droite */}
       <Text
         position={[2.61, 0, 0]}
-        rotation={[0, -Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
+        rotation={[0, -Math.PI / 2 + Math.PI, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() =>
-          rotateToFace({ face: "right", targetQuaternion, setRotate })
-        )}
-        {...fontProps}
+        onClick={onClick("right")}
+        font="/fonts/Iceberg-Regular.ttf"
+        fontSize={0.42}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
       >
         SKILLS
       </Text>
-      {/* Face gauche */}
       <Text
         position={[-2.61, 0, 0]}
-        rotation={[0, Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
+        rotation={[0, Math.PI / 2 + Math.PI, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() =>
-          rotateToFace({ face: "left", targetQuaternion, setRotate })
-        )}
-        {...fontProps}
+        onClick={onClick("left")}
+        font="/fonts/Iceberg-Regular.ttf"
+        fontSize={0.42}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
       >
         ABOUT ME
       </Text>
