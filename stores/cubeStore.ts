@@ -3,6 +3,7 @@ import { create } from "zustand";
 type CubeRotate = {
   reset: boolean;
   target_face: boolean;
+  face?: "front" | "back" | "left" | "right";
 };
 
 type CubeStore = {
@@ -10,6 +11,8 @@ type CubeStore = {
   setRotate: (value: CubeRotate) => void;
   bounceY: number;
   setBounceY: (y: number) => void;
+  zoomCamera: boolean;
+  setZoomCamera: (zoom: boolean) => void;
 };
 
 export const useCubeStore = create<CubeStore>((set) => ({
@@ -18,4 +21,7 @@ export const useCubeStore = create<CubeStore>((set) => ({
 
   bounceY: 0,
   setBounceY: (y) => set({ bounceY: y }),
+
+  zoomCamera: false,
+  setZoomCamera: (zoom) => set({ zoomCamera: zoom }),
 }));
