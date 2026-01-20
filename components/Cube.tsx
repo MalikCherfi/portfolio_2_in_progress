@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
@@ -16,6 +16,7 @@ const Cube = () => {
   const setBounceY = useCubeStore((state) => state.setBounceY);
   const ao = useTexture("/ao.png");
   const boxRef = useRef<THREE.Mesh>(null!);
+  const { camera } = useThree();
 
   // Orientation de base (ne jamais modifier)
   const defaultQuaternion = useRef(new THREE.Quaternion());
@@ -34,30 +35,48 @@ const Cube = () => {
     const elapsed = clock.current.getElapsedTime();
     const t = elapsed - timeOffset.current;
 
-    // Position Y cible : si zoomCamera → remonter à 1.5, sinon bounce
-    const targetY = zoomCamera ? 0 : Math.sin(t * 2) * 0.2;
+    // ----- Position Y cible -----
+    let targetY = 0;
 
+    if (zoomCamera) {
+      const perspectiveCamera = camera as THREE.PerspectiveCamera;
+
+      // Calcul dynamique pour que le cube soit à 30% depuis le haut de l'écran
+      const cameraZ = 5; // distance actuelle caméra
+      const fovRad = (perspectiveCamera.fov * Math.PI) / 180;
+      const visibleHeight = 2 * cameraZ * Math.tan(fovRad / 2);
+      const screenPercent = 0.32; // 0 = bas, 1 = haut
+      targetY = (0.5 - screenPercent) * visibleHeight;
+    } else {
+      // Bounce normal quand pas de zoom
+      targetY = Math.sin(t * 2) * 0.2;
+    }
+
+    // ----- Rotation et position -----
     if (!rotate.reset && !rotate.target_face) {
-      // Bouce uniquement si pas de rotation vers une face
+      // Interpolation Y pour transition fluide
       groupRef.current.position.y +=
         (targetY - groupRef.current.position.y) * 0.1;
 
       // Rotation par drag/inertie
       groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
       groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
+
+      // Diminution progressive de l’inertie
       velocity.current.x *= 0.95;
       velocity.current.y *= 0.95;
     } else {
-      // Animation fluide vers initial position + rotation cible
-      groupRef.current.position.lerp(new THREE.Vector3(0, targetY, 0), 0.1);
+      // Animation fluide vers la position initiale ou face cible
+      const targetPos = new THREE.Vector3(0, targetY, 0);
+      groupRef.current.position.lerp(targetPos, 0.1);
       groupRef.current.quaternion.slerp(
         rotate.reset ? defaultQuaternion.current : targetQuaternion.current,
         0.1,
       );
 
+      // Stop rotation quand proche de la cible
       if (
-        groupRef.current.position.distanceTo(new THREE.Vector3(0, targetY, 0)) <
-          0.01 &&
+        groupRef.current.position.distanceTo(targetPos) < 0.01 &&
         groupRef.current.quaternion.angleTo(
           rotate.reset ? defaultQuaternion.current : targetQuaternion.current,
         ) < 0.01
@@ -67,7 +86,7 @@ const Cube = () => {
       }
     }
 
-    // Update bounceY pour ContactShadows
+    // ----- Mise à jour des ombres -----
     setBounceY(groupRef.current.position.y);
   });
 
