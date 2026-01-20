@@ -7,8 +7,7 @@ import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 
 const Scene = () => {
-  const bounceY = useCubeStore((state) => state.bounceY);
-  const zoomCamera = useCubeStore((state) => state.zoomCamera);
+  const { bounceY, zoomCamera } = useCubeStore();
 
   const rightLight = useMemo(() => {
     const light = new THREE.RectAreaLight("#ffffff", 3, 2, 2);
