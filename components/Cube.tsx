@@ -143,11 +143,11 @@ const Cube = () => {
   return (
     <group
       ref={groupRef}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-      onPointerCancel={onPointerUp}
+      onPointerDown={!zoomCamera && onPointerDown}
+      onPointerMove={!zoomCamera && onPointerMove}
+      onPointerUp={!zoomCamera && onPointerUp}
+      onPointerLeave={!zoomCamera && onPointerUp}
+      onPointerCancel={!zoomCamera && onPointerUp}
     >
       {/* <mesh
         position={[0, 0, 2.61]} // légèrement devant la face avant
