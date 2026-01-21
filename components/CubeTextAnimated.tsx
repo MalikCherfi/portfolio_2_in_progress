@@ -2,6 +2,8 @@ import { Text } from "@react-three/drei";
 import { animated, useSpring, easings } from "@react-spring/three";
 import { useThree } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
+import { PerspectiveCamera } from "three";
+import { useMemo } from "react";
 
 const AnimatedText = animated(Text);
 
@@ -9,7 +11,19 @@ const description = `Bienvenue sur mon portfolio. Découvrez mes compétences et
 
 export default function CubeTextAnimated() {
   const { zoomDone } = useCubeStore();
-  const { viewport } = useThree();
+  const { viewport, camera } = useThree();
+  const perspectiveCamera = camera as PerspectiveCamera;
+
+  const { targetY } = useMemo(() => {
+    const distance = perspectiveCamera.position.z - 2.61;
+    const fovRad = (perspectiveCamera.fov * Math.PI) / 180;
+    const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
+
+    const bottom = -visibleHeight / 2;
+    const targetY = bottom / 2;
+
+    return { targetY };
+  }, [perspectiveCamera.position.z, perspectiveCamera.fov]);
 
   const getBaseValues = () => {
     const w = window.innerWidth;
@@ -32,13 +46,13 @@ export default function CubeTextAnimated() {
   const base = getBaseValues();
 
   const spring = useSpring({
-    from: { y: -2, opacity: 0 },
+    from: { y: targetY, opacity: 0 },
     to: {
-      y: zoomDone ? -0.4 : -2,
+      y: targetY,
       opacity: zoomDone ? 1 : 0,
     },
     config: {
-      duration: 2000,
+      duration: 1000,
       easing: easings.easeInOutSine,
     },
   });
