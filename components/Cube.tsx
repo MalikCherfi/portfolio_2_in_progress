@@ -13,7 +13,7 @@ const Cube = () => {
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
-  const { rotate, setRotate, zoomCamera } = useCubeStore();
+  const { rotate, setRotate, zoomCamera, zoomDone, setZoomDone } = useCubeStore();
   const clock = useRef(new THREE.Clock());
   const timeOffset = useRef(0);
   const setBounceY = useCubeStore((state) => state.setBounceY);
@@ -27,7 +27,7 @@ const Cube = () => {
   const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
 
-  const [zoomDone, setZoomDone] = useState(false);
+ 
 
   // --- Frame loop ---
   useFrame(() => {
@@ -41,11 +41,11 @@ const Cube = () => {
     camera.position.lerp(new THREE.Vector3(0, 0, targetZ), 0.05);
     camera.lookAt(0, 0, 0);
 
-    if (zoomCamera && Math.abs(camera.position.z - 5) < 0.01) {
-      setZoomDone(true);
-    } else if (!zoomCamera) {
-      setZoomDone(false);
-    }
+    // if (zoomCamera && Math.abs(camera.position.z - 5) < 0.01) {
+    //   setZoomDone(true);
+    // } else if (!zoomCamera) {
+    //   setZoomDone(false);
+    // }
 
     // ---------------- TARGET Y ----------------
     let targetY = 0;
