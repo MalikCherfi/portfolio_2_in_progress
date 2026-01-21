@@ -10,6 +10,7 @@ export default function Home() {
   const setRotate = useCubeStore((state) => state.setRotate);
   const zoomCamera = useCubeStore((state) => state.zoomCamera);
   const setZoomCamera = useCubeStore((state) => state.setZoomCamera);
+  const setZoomDone = useCubeStore((state) => state.setZoomDone);
 
   return (
     <div className="w-screen h-screen bg-gradient-to-t from-[#CE6A6B] to-[#EBACA2]">
@@ -25,7 +26,13 @@ export default function Home() {
 
         {zoomCamera && (
           <button
-            onClick={() => setZoomCamera(false)}
+            onClick={() => {
+              setZoomDone(false);
+
+              setTimeout(() => {
+                setZoomCamera(false);
+              }, 2000);
+            }}
             className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
           >
             <ArrowLeft size={22} />
