@@ -7,9 +7,17 @@ import { useMemo } from "react";
 
 const AnimatedText = animated(Text);
 
-const description = `Bienvenue sur mon portfolio. Découvrez mes compétences et mon expérience. Je suis Malik Cherfi, développeur web passionné par la création d'expériences numériques innovantes et performantes. Explorez mes projets et n'hésitez pas à me contacter pour collaborer !`;
-
-export default function CubeTextAnimated() {
+export default function CubeTextAnimated({
+  positionX,
+  positionZ,
+  rotation,
+  description,
+}: {
+  positionX: number;
+  positionZ: number;
+  rotation?: [number, number, number] | undefined;
+  description: string;
+}) {
   const { zoomDone } = useCubeStore();
   const { viewport, camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
@@ -51,17 +59,15 @@ export default function CubeTextAnimated() {
       y: targetY,
       opacity: zoomDone ? 1 : 0,
     },
-    config: {
-      duration: 1000,
-      easing: easings.easeInOutSine,
-    },
+    config: { duration: 1000, easing: easings.easeInOutSine },
   });
 
   return (
     <AnimatedText
-      position-x={0}
+      position-x={positionX}
       position-y={spring.y}
-      position-z={2.61}
+      position-z={positionZ}
+      rotation={rotation}
       font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
       fontSize={base.fontSize}
       maxWidth={base.maxWidth}
