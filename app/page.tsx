@@ -31,7 +31,7 @@ export default function Home() {
 
               setTimeout(() => {
                 setZoomCamera(false);
-              }, 2000);
+              }, 1000);
             }}
             className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
           >
