@@ -6,7 +6,7 @@ import { useCubeStore } from "@/stores/cubeStore";
 const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragThreshold = 5;
-  const { setRotate, setZoomCamera } = useCubeStore();
+  const { setRotate, setZoomCamera, setZoomDone } = useCubeStore();
   const [fontSize, setFontSize] = useState(0.42); // taille initiale
   const [targetFontSize, setTargetFontSize] = useState(0.42);
 
@@ -29,6 +29,9 @@ const CubeText = ({ targetQuaternion }) => {
       rotateToFace({ face, targetQuaternion, setRotate });
       setRotate({ reset: false, target_face: true, face });
       setZoomCamera(true); // zoom caméra vers 5
+      setTimeout(() => {
+        setZoomDone(true);
+      }, 1500);
     }
   };
 
