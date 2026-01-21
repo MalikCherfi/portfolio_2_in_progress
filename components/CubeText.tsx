@@ -52,7 +52,7 @@ const CubeText = ({ targetQuaternion }) => {
 
   // smooth interpolation
   useFrame(() => {
-    const base = zoomCamera ? targetFontSize * 0.68 : targetFontSize;
+    const base = zoomCamera ? targetFontSize * 0.6 : targetFontSize;
     setFontSize((f) => f + (base - f) * 0.1);
   });
 
