@@ -12,10 +12,6 @@ Toujours en quête de nouveaux challenges, je cherche à évoluer dans un enviro
 dynamique où je peux apporter mon expertise tout en continuant à apprendre.
 `;
 
-interface Props {
-  zoomDone: boolean;
-}
-
 export default function CubeTextAnimated() {
   const { zoomDone } = useCubeStore();
   const spring = useSpring({
@@ -35,13 +31,15 @@ export default function CubeTextAnimated() {
       position-x={0}
       position-y={spring.y}
       position-z={2.61}
-      font="/fonts/Iceland-Regular.ttf"
-      fontSize={0.085}
+      font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
+      fontSize={0.07}
+      maxWidth={3.8}
       lineHeight={1.45}
       letterSpacing={-0.02}
       color="#ffffff"
       anchorX="center"
       anchorY="top"
+      textAlign="center"
       material-opacity={spring.opacity}
       material-transparent
     >
