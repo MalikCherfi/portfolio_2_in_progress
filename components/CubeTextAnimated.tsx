@@ -1,19 +1,36 @@
 import { Text } from "@react-three/drei";
 import { animated, useSpring, easings } from "@react-spring/three";
+import { useThree } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 
 const AnimatedText = animated(Text);
 
-const description = `
-Développeur Full Stack avec 2 ans d'expérience, j'ai travaillé sur des projets variés,
-allant de la maintenance applicative à la conception et au développement de nouvelles
-fonctionnalités. J'ai occupé le rôle de lead développeur sur divers projets.
-Toujours en quête de nouveaux challenges, je cherche à évoluer dans un environnement
-dynamique où je peux apporter mon expertise tout en continuant à apprendre.
-`;
+const description = `Bienvenue sur mon portfolio. Découvrez mes compétences et mon expérience. Je suis Malik Cherfi, développeur web passionné par la création d'expériences numériques innovantes et performantes. Explorez mes projets et n'hésitez pas à me contacter pour collaborer !`;
 
 export default function CubeTextAnimated() {
   const { zoomDone } = useCubeStore();
+  const { viewport } = useThree();
+
+  const getBaseValues = () => {
+    const w = window.innerWidth;
+    if (w < 600)
+      return {
+        fontSize: 0.055 * 0.9,
+        maxWidth: viewport.width * viewport.height * 0.0056,
+      };
+    if (w < 900)
+      return {
+        fontSize: 0.065 * 0.9,
+        maxWidth: viewport.width * viewport.height * 0.0056,
+      };
+    return {
+      fontSize: 0.075 * 0.9,
+      maxWidth: viewport.width * viewport.height * 0.0056,
+    };
+  };
+
+  const base = getBaseValues();
+
   const spring = useSpring({
     from: { y: -2, opacity: 0 },
     to: {
@@ -32,10 +49,10 @@ export default function CubeTextAnimated() {
       position-y={spring.y}
       position-z={2.61}
       font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
-      fontSize={0.07}
-      maxWidth={3.8}
+      fontSize={base.fontSize}
+      maxWidth={base.maxWidth}
       lineHeight={1.45}
-      letterSpacing={-0.02}
+      letterSpacing={-0.015}
       color="#ffffff"
       anchorX="center"
       anchorY="top"
