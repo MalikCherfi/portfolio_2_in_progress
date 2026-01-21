@@ -3,22 +3,36 @@
 import { Canvas } from "@react-three/fiber";
 import Scene from "../components/Scene";
 import { useCubeStore } from "@/stores/cubeStore";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, ArrowLeft } from "lucide-react";
 import * as THREE from "three";
 
 export default function Home() {
-  const setReset = useCubeStore((state) => state.setReset);
+  const setRotate = useCubeStore((state) => state.setRotate);
+  const zoomCamera = useCubeStore((state) => state.zoomCamera);
+  const setZoomCamera = useCubeStore((state) => state.setZoomCamera);
 
   return (
     <div className="w-screen h-screen bg-gradient-to-t from-[#CE6A6B] to-[#EBACA2]">
       <div className="absolute top-5 left-5 z-10 flex gap-2">
-        <button
-          onClick={() => setReset(true)}
-          className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
-        >
-          <RotateCcw size={22} />
-        </button>
+        {!zoomCamera && (
+          <button
+            onClick={() => setRotate({ reset: true, target_face: false })}
+            className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
+          >
+            <RotateCcw size={22} />
+          </button>
+        )}
+
+        {zoomCamera && (
+          <button
+            onClick={() => setZoomCamera(false)}
+            className="p-3 rounded-full bg-white/70 hover:bg-white shadow-md"
+          >
+            <ArrowLeft size={22} />
+          </button>
+        )}
       </div>
+
       <Canvas
         shadows
         camera={{ position: [0, 0, 20], fov: 45 }}

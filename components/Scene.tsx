@@ -3,10 +3,11 @@ import Cube from "./Cube";
 import { useCubeStore } from "@/stores/cubeStore";
 import * as THREE from "three";
 import BackgroundGeometry from "./BackgroundGeometry";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 
 const Scene = () => {
-  const bounceY = useCubeStore((state) => state.bounceY);
+  const { bounceY, zoomCamera } = useCubeStore();
 
   const rightLight = useMemo(() => {
     const light = new THREE.RectAreaLight("#ffffff", 3, 2, 2);
@@ -22,25 +23,35 @@ const Scene = () => {
     return light;
   }, []);
 
+  const { camera } = useThree();
+
+  // position initiale et cible de la caméra
+  const camTarget = useRef(new THREE.Vector3(0, 0, 20));
+
+  // Interpolation fluide de la caméra
+  useFrame(() => {
+    const targetZ = zoomCamera ? 5 : 20; // zoom si zoomCamera=true
+    camTarget.current.set(0, 0, targetZ);
+    camera.position.lerp(camTarget.current, 0.05);
+    camera.lookAt(0, 0, 0);
+  });
+
   return (
     <>
+      {/* Lights */}
       <ambientLight intensity={0.25} color="#ffffff" />
-
-      <hemisphereLight
-        color={"#ffffff"}
-        groundColor={"#ffffff"}
-        intensity={0.15}
-      />
-
+      <hemisphereLight color="#ffffff" groundColor="#ffffff" intensity={0.15} />
       <directionalLight position={[0, 5, 0]} intensity={1.1} color="#ffffff" />
-
       <primitive object={rightLight} />
       <primitive object={backLight} />
 
+      {/* Cube */}
       <Cube />
 
+      {/* Background */}
       <BackgroundGeometry />
 
+      {/* Shadows */}
       <ContactShadows
         position={[0, -5, 0]}
         opacity={0.6}

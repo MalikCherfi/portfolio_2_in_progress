@@ -1,63 +1,95 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
+import CubeTextAnimated from "./CubeTextAnimated";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const { reset, setReset } = useCubeStore();
+
+  const { rotate, setRotate, zoomCamera } = useCubeStore();
   const clock = useRef(new THREE.Clock());
+  const timeOffset = useRef(0);
   const setBounceY = useCubeStore((state) => state.setBounceY);
   const ao = useTexture("/ao.png");
   const boxRef = useRef<THREE.Mesh>(null!);
+  const { camera } = useThree();
 
-  const initialPosition = useMemo(() => new THREE.Vector3(0, 0, 0), []);
-  const initialQuaternion = useMemo(() => new THREE.Quaternion(), []);
+  const defaultQuaternion = useRef(new THREE.Quaternion());
+  const targetQuaternion = useRef(new THREE.Quaternion());
 
   const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
 
-  const timeOffset = useRef(0);
+  const [zoomDone, setZoomDone] = useState(false);
 
+  // --- Frame loop ---
   useFrame(() => {
     if (!groupRef.current) return;
 
     const elapsed = clock.current.getElapsedTime();
-    const t = elapsed - timeOffset.current; // on applique l'offset temporel
+    const t = elapsed - timeOffset.current;
 
-    if (!reset) {
-      // 🎯 effet bounce vertical fluide
-      const bounce = Math.sin(t * 2) * 0.2;
-      groupRef.current.position.y = bounce;
-      setBounceY(bounce);
+    // ---------------- CAMERA ----------------
+    const targetZ = zoomCamera ? 5 : 20;
+    camera.position.lerp(new THREE.Vector3(0, 0, targetZ), 0.05);
+    camera.lookAt(0, 0, 0);
 
-      // rotation + inertie
+    if (zoomCamera && Math.abs(camera.position.z - 5) < 0.01) {
+      setZoomDone(true);
+    } else if (!zoomCamera) {
+      setZoomDone(false);
+    }
+
+    // ---------------- TARGET Y ----------------
+    let targetY = 0;
+
+    if (zoomCamera) {
+      const fovRad = ((camera as THREE.PerspectiveCamera).fov * Math.PI) / 180;
+      const visibleHeight = 2 * 5 * Math.tan(fovRad / 2);
+      targetY = (0.5 - 0.32) * visibleHeight;
+    } else {
+      // ✅ BOUNCE VIVANT
+      targetY = Math.sin(t * 2) * 0.2;
+    }
+
+    // ---------------- ROTATION / POSITION ----------------
+    if (!rotate.reset && !rotate.target_face) {
+      groupRef.current.position.y +=
+        (targetY - groupRef.current.position.y) * 0.1;
+
       groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
       groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
 
       velocity.current.x *= 0.95;
       velocity.current.y *= 0.95;
     } else {
-      // Animation fluide vers la position initiale
-      groupRef.current.position.lerp(initialPosition, 0.1);
-      groupRef.current.quaternion.slerp(initialQuaternion, 0.1);
+      const targetPos = new THREE.Vector3(0, targetY, 0);
+      groupRef.current.position.lerp(targetPos, 0.1);
+      groupRef.current.quaternion.slerp(
+        rotate.reset ? defaultQuaternion.current : targetQuaternion.current,
+        0.1,
+      );
 
-      // Stop reset quand on est proche
       if (
-        groupRef.current.position.distanceTo(initialPosition) < 0.01 &&
-        groupRef.current.quaternion.angleTo(initialQuaternion) < 0.01
+        groupRef.current.position.distanceTo(targetPos) < 0.01 &&
+        groupRef.current.quaternion.angleTo(
+          rotate.reset ? defaultQuaternion.current : targetQuaternion.current,
+        ) < 0.01
       ) {
-        // 🔄 Quand le reset est fini, on recale le bounce ici :
+        // 🔥 reset propre du bounce
         timeOffset.current = clock.current.getElapsedTime();
-        setReset(false);
+        setRotate({ reset: false, target_face: false });
       }
     }
+
+    setBounceY(groupRef.current.position.y);
   });
 
   useEffect(() => {
@@ -68,10 +100,11 @@ const Cube = () => {
     // Dupliquer UV → uv2
     geo.setAttribute(
       "uv2",
-      new THREE.BufferAttribute(geo.attributes.uv.array, 2)
+      new THREE.BufferAttribute(geo.attributes.uv.array, 2),
     );
   }, []);
 
+  // --- Drag handlers ---
   const onPointerDown = (e: any) => {
     e.stopPropagation();
     setIsDragging(true);
@@ -81,27 +114,19 @@ const Cube = () => {
       (e.target as Element).setPointerCapture?.(e.pointerId);
     } catch {}
   };
-
   const onPointerMove = (e: any) => {
     e.stopPropagation();
     if (!isDragging || !groupRef.current) return;
-
     const dx = e.clientX - prev.current.x;
     const dy = e.clientY - prev.current.y;
-
     const rotationSpeed = 0.004;
-
-    // rotation sur les axes globaux, pas locaux
     groupRef.current.rotateOnWorldAxis(axisY, dx * rotationSpeed);
     groupRef.current.rotateOnWorldAxis(axisX, dy * rotationSpeed);
-
     velocity.current.x = dx * rotationSpeed;
     velocity.current.y = dy * rotationSpeed;
-
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
   };
-
   const onPointerUp = (e: any) => {
     e.stopPropagation();
     setIsDragging(false);
@@ -113,21 +138,17 @@ const Cube = () => {
   return (
     <group
       ref={groupRef}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-      onPointerCancel={onPointerUp}
+      onPointerDown={!zoomCamera && onPointerDown}
+      onPointerMove={!zoomCamera && onPointerMove}
+      onPointerUp={!zoomCamera && onPointerUp}
+      onPointerLeave={!zoomCamera && onPointerUp}
+      onPointerCancel={!zoomCamera && onPointerUp}
     >
-      {/* <mesh
-        position={[0, 0, 2.61]} // légèrement devant la face avant
-        onClick={(e) => console.log("Bouton cliqué !")}
-      >
-        <planeGeometry args={[0.8, 0.4]} />
-        <meshStandardMaterial color="orange" />
-      </mesh> */}
+      {/* CubeText pour les faces cliquables */}
+      <CubeText targetQuaternion={targetQuaternion} />
 
-      <CubeText />
+      {/* Texte descriptif animé après zoom */}
+      <CubeTextAnimated zoomDone={zoomDone} />
 
       <RoundedBox
         ref={boxRef}
@@ -139,7 +160,6 @@ const Cube = () => {
       >
         <meshStandardMaterial
           color="#B6465F"
-          // emissive="#B6465F"
           roughness={0.55}
           metalness={0}
           aoMap={ao}

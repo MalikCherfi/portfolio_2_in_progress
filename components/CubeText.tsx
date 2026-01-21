@@ -1,9 +1,14 @@
 import { Text } from "@react-three/drei";
-import { useState, useRef } from "react";
-
-const CubeText = () => {
+import { useState, useRef, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import { rotateToFace } from "@/utils/rotateToFace";
+import { useCubeStore } from "@/stores/cubeStore";
+const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const dragThreshold = 3; // pixels
+  const dragThreshold = 5;
+  const { setRotate, setZoomCamera } = useCubeStore();
+  const [fontSize, setFontSize] = useState(0.42); // taille initiale
+  const [targetFontSize, setTargetFontSize] = useState(0.42);
 
   const start = useRef({ x: 0, y: 0 });
 
@@ -15,19 +20,39 @@ const CubeText = () => {
   const onPointerMove = (e) => {
     const dx = e.clientX - start.current.x;
     const dy = e.clientY - start.current.y;
-    if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) {
-      setIsDragging(true);
+    if (Math.sqrt(dx * dx + dy * dy) > dragThreshold) setIsDragging(true);
+  };
+
+  const onClick = (face) => (e) => {
+    e.stopPropagation();
+    if (!isDragging) {
+      rotateToFace({ face, targetQuaternion, setRotate });
+      setRotate({ reset: false, target_face: true, face });
+      setZoomCamera(true); // zoom caméra vers 5
     }
   };
 
-  const onClick = (callback) => (e) => {
-    e.stopPropagation();
-    if (!isDragging) callback(e); // seulement si ce n’était pas un drag
-  };
+  // Détecter la largeur de l'écran
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      if (w < 600) setTargetFontSize(0.25);
+      else if (w < 900) setTargetFontSize(0.35);
+      else setTargetFontSize(0.42);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Interpolation fluide chaque frame
+  useFrame(() => {
+    setFontSize((f) => f + (targetFontSize - f) * 0.1);
+  });
 
   const fontProps = {
     font: "/fonts/Iceberg-Regular.ttf",
-    fontSize: 0.42,
+    fontSize,
     color: "#ffffff",
     anchorX: "center",
     anchorY: "middle",
@@ -37,43 +62,39 @@ const CubeText = () => {
     <>
       <Text
         position={[0, 0, 2.61]}
-        rotation={[0, 0, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK FRONT"))}
+        onClick={onClick("front")}
         {...fontProps}
       >
         WELCOME
       </Text>
-      {/* Face arrière */}
       <Text
         position={[0, 0, -2.61]}
-        rotation={[0, Math.PI, 0]} // inversé pour être lisible depuis l'extérieur
+        rotation={[0, Math.PI, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK BACK"))}
+        onClick={onClick("back")}
         {...fontProps}
       >
         CONTACT
       </Text>
-      {/* Face droite */}
       <Text
         position={[2.61, 0, 0]}
-        rotation={[0, -Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
+        rotation={[0, -Math.PI / 2 + Math.PI, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK RIGHT"))}
+        onClick={onClick("right")}
         {...fontProps}
       >
         SKILLS
       </Text>
-      {/* Face gauche */}
       <Text
         position={[-2.61, 0, 0]}
-        rotation={[0, Math.PI / 2 + Math.PI, 0]} // orienté vers l'extérieur
+        rotation={[0, Math.PI / 2 + Math.PI, 0]}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onClick={onClick(() => console.log("CLICK LEFT"))}
+        onClick={onClick("left")}
         {...fontProps}
       >
         ABOUT ME
