@@ -20,7 +20,7 @@ export default function CubeTextAnimated({ zoomDone }: Props) {
 
   const fontSize = 0.08;
   const maxLineWidth = 3; // largeur max en unités three
-  const lineHeight = 0.14;
+  const lineHeight = 0.1;
 
   const wordsLayout = useMemo(() => {
     const words = description.split(" ");
