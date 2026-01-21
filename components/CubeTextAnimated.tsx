@@ -1,5 +1,6 @@
 import { Text } from "@react-three/drei";
 import { animated, useSpring, easings } from "@react-spring/three";
+import { useCubeStore } from "@/stores/cubeStore";
 
 const AnimatedText = animated(Text);
 
@@ -15,15 +16,16 @@ interface Props {
   zoomDone: boolean;
 }
 
-export default function CubeTextAnimated({ zoomDone }: Props) {
+export default function CubeTextAnimated() {
+  const { zoomDone } = useCubeStore();
   const spring = useSpring({
-    from: { y: -3, opacity: 0 },
+    from: { y: -2, opacity: 0 },
     to: {
-      y: zoomDone ? -0.4 : -3,
+      y: zoomDone ? -0.4 : -2,
       opacity: zoomDone ? 1 : 0,
     },
     config: {
-      duration: 2500,
+      duration: 2000,
       easing: easings.easeInOutSine,
     },
   });
@@ -33,7 +35,7 @@ export default function CubeTextAnimated({ zoomDone }: Props) {
       position-x={0}
       position-y={spring.y}
       position-z={2.61}
-      font="/fonts/Iceberg-Regular.ttf"
+      font="/fonts/Iceland-Regular.ttf"
       fontSize={0.085}
       lineHeight={1.45}
       letterSpacing={-0.02}
