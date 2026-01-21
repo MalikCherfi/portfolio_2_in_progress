@@ -6,8 +6,10 @@ import { useCubeStore } from "@/stores/cubeStore";
 const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragThreshold = 5;
-  const { setRotate, setZoomCamera, setZoomDone } = useCubeStore();
-  const [fontSize, setFontSize] = useState(0.42); // taille initiale
+
+  const { setRotate, setZoomCamera, setZoomDone, zoomCamera } = useCubeStore();
+
+  const [fontSize, setFontSize] = useState(0.42);
   const [targetFontSize, setTargetFontSize] = useState(0.42);
 
   const start = useRef({ x: 0, y: 0 });
@@ -28,29 +30,30 @@ const CubeText = ({ targetQuaternion }) => {
     if (!isDragging) {
       rotateToFace({ face, targetQuaternion, setRotate });
       setRotate({ reset: false, target_face: true, face });
-      setZoomCamera(true); // zoom caméra vers 5
-      setTimeout(() => {
-        setZoomDone(true);
-      }, 1500);
+      setZoomCamera(true);
+      setTimeout(() => setZoomDone(true), 1500);
     }
   };
 
-  // Détecter la largeur de l'écran
+  // responsive base size
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 600) setTargetFontSize(0.25);
-      else if (w < 900) setTargetFontSize(0.35);
-      else setTargetFontSize(0.42);
+      let base = 0.42;
+      if (w < 600) base = 0.28;
+      else if (w < 900) base = 0.38;
+      setTargetFontSize(base);
     };
+
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Interpolation fluide chaque frame
+  // smooth interpolation
   useFrame(() => {
-    setFontSize((f) => f + (targetFontSize - f) * 0.1);
+    const base = zoomCamera ? targetFontSize * 0.68 : targetFontSize;
+    setFontSize((f) => f + (base - f) * 0.1);
   });
 
   const fontProps = {
@@ -65,40 +68,43 @@ const CubeText = ({ targetQuaternion }) => {
     <>
       <Text
         position={[0, 0, 2.61]}
+        {...fontProps}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("front")}
-        {...fontProps}
       >
         WELCOME
       </Text>
+
       <Text
         position={[0, 0, -2.61]}
         rotation={[0, Math.PI, 0]}
+        {...fontProps}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("back")}
-        {...fontProps}
       >
         CONTACT
       </Text>
+
       <Text
         position={[2.61, 0, 0]}
         rotation={[0, -Math.PI / 2 + Math.PI, 0]}
+        {...fontProps}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("right")}
-        {...fontProps}
       >
         SKILLS
       </Text>
+
       <Text
         position={[-2.61, 0, 0]}
         rotation={[0, Math.PI / 2 + Math.PI, 0]}
+        {...fontProps}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onClick={onClick("left")}
-        {...fontProps}
       >
         ABOUT ME
       </Text>
