@@ -5,7 +5,7 @@ import { useCubeStore } from "@/stores/cubeStore";
 import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
-import CubeTextAnimated from "./CubeTextAnimated";
+import CubeDescriptionText from "./CubeDescriptionText";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -13,7 +13,7 @@ const Cube = () => {
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
-  const { rotate, setRotate, zoomCamera, zoomDone } = useCubeStore();
+  const { rotate, setRotate, zoomCamera } = useCubeStore();
   const clock = useRef(new THREE.Clock());
   const timeOffset = useRef(0);
   const setBounceY = useCubeStore((state) => state.setBounceY);
@@ -140,7 +140,7 @@ const Cube = () => {
       <CubeText targetQuaternion={targetQuaternion} />
 
       {/* Texte descriptif animé après zoom */}
-      <CubeTextAnimated />
+      <CubeDescriptionText />
 
       <RoundedBox
         ref={boxRef}
