@@ -21,14 +21,25 @@ export default function CubeTextAnimated({ zoomDone }: Props) {
   const fontSize = 0.08;
   const maxLineWidth = 3; // largeur max en unités three
   const lineHeight = 0.1;
+  const words = useMemo(() => description.split(" "), []);
 
-  const wordsLayout = useMemo(() => {
-    const words = description.split(" ");
+  const lines = useMemo(() => {
     let x = 0;
     let y = 0;
 
+    const maxLineWidth = 3.5;
+    const lineHeight = fontSize * 1.6;
+
+    const LETTER_SPACING = -0.02;
+    const CHAR_WIDTH = 0.55;
+    const SPACE_WIDTH = fontSize * 0.35;
+
+    console.log(SPACE_WIDTH);
+
     return words.map((word) => {
-      const wordWidth = word.length * fontSize * 0.6;
+      const wordWidth =
+        word.length * fontSize * CHAR_WIDTH +
+        (word.length - 1) * LETTER_SPACING * fontSize;
 
       if (x + wordWidth > maxLineWidth) {
         x = 0;
@@ -36,15 +47,16 @@ export default function CubeTextAnimated({ zoomDone }: Props) {
       }
 
       const position: [number, number, number] = [x, y, 2.61];
-      x += wordWidth + fontSize * 0.5;
+
+      x += wordWidth + SPACE_WIDTH;
 
       return { word, position };
     });
-  }, []);
+  }, [words]);
 
   return (
     <group position={[-maxLineWidth / 2, -0.8, 0]}>
-      {wordsLayout.map(({ word, position }, i) => {
+      {lines.map(({ word, position }, i) => {
         const spring = useSpring({
           from: { scale: [0, 0, 0], opacity: 0, y: position[1] - 0.2 },
           to: {
