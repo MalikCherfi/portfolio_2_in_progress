@@ -3,7 +3,9 @@ import { animated, useSpring, easings } from "@react-spring/three";
 import { useThree } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 import { PerspectiveCamera } from "three";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 
 const AnimatedText = animated(Text);
 
@@ -21,6 +23,7 @@ export default function CubeTextAnimated({
   const { zoomDone } = useCubeStore();
   const { viewport, camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
+  const textRef = useRef<THREE.Object3D>(null);
 
   const { targetY } = useMemo(() => {
     const distance = perspectiveCamera.position.z - 2.61;
@@ -62,8 +65,19 @@ export default function CubeTextAnimated({
     config: { duration: 1000, easing: easings.easeInOutSine },
   });
 
+  // Obligé d'utiliser useFrame pour modifier la visibilité,
+  // car dans three.js l'opacité ne s'applique pas quand on est derrière le texte
+  useFrame(() => {
+    if (!textRef.current) return;
+
+    if (perspectiveCamera.position.z > 18) {
+      textRef.current.visible = false;
+    } else textRef.current.visible = true;
+  });
+
   return (
     <AnimatedText
+      ref={textRef}
       position-x={positionX}
       position-y={spring.y}
       position-z={positionZ}
