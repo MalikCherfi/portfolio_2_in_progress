@@ -70,9 +70,7 @@ export default function CubeTextAnimated({
   useFrame(() => {
     if (!textRef.current) return;
 
-    if (perspectiveCamera.position.z > 18) {
-      textRef.current.visible = false;
-    } else textRef.current.visible = true;
+    textRef.current.visible = perspectiveCamera.position.z <= 18;
   });
 
   return (
