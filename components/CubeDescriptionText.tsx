@@ -22,7 +22,7 @@ const CubeDescriptionText = () => {
         { text: "+33 6 47 32 09 96" },
         { text: "Toulouse, France" },
         {
-          text: "www.linkedin.com/in/malik-cherfi",
+          text: "LinkedIn",
           link: "https://www.linkedin.com/in/malik-cherfi",
         },
       ],
@@ -33,11 +33,11 @@ const CubeDescriptionText = () => {
       positionZ: 0,
       rotation: [0, -Math.PI / 2 + Math.PI, 0] as [number, number, number],
       lines: [
-        { text: "• JavaScript         • MongoDB" },
-        { text: "• TypeScript         • PostgreSQL" },
-        { text: "• React / Next.js    • Prisma" },
-        { text: "• Node.js            • Three.js" },
-        { text: "• Tailwind CSS       • Docker" },
+        { cols: ["JavaScript", "MongoDB"] },
+        { cols: ["TypeScript", "PostgreSQL"] },
+        { cols: ["React / Next.js", "Prisma"] },
+        { cols: ["Node.js", "Three.js"] },
+        { cols: ["Tailwind CSS", "Docker"] },
       ],
     },
     {
