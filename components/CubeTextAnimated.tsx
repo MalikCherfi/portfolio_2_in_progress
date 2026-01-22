@@ -9,8 +9,9 @@ import * as THREE from "three";
 const AnimatedText = animated(Text);
 
 type Line = {
-  text: string;
+  text?: string;
   link?: string;
+  cols?: string[]; // si on veut plusieurs colonnes
 };
 
 type Props = {
@@ -31,10 +32,10 @@ export default function CubeTextAnimated({
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
 
+  // base fontSize et gaps
   const base = useMemo(() => {
     const w = window.innerWidth;
     const fontSize = w < 600 ? 0.05 : w < 900 ? 0.06 : 0.07;
-
     return {
       fontSize,
       maxWidth: viewport.width * viewport.height * 0.0056,
@@ -55,7 +56,6 @@ export default function CubeTextAnimated({
     config: { duration: 1000, easing: easings.easeInOutSine },
   });
 
-  // Masque quand la caméra passe derrière le texte ( car opacité à 0 ne fonctionne pas de manière fiable )
   useFrame(() => {
     if (!groupRef.current) return;
     groupRef.current.visible = perspectiveCamera.position.z <= 18;
@@ -63,45 +63,87 @@ export default function CubeTextAnimated({
 
   return (
     <group ref={groupRef}>
-      {lines.map((line, index) => (
-        <AnimatedText
-          key={index}
-          position={[
-            positionX,
-            spring.y.get() - index * base.lineGap,
-            positionZ,
-          ]}
-          rotation={rotation}
-          font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
-          fontSize={base.fontSize}
-          maxWidth={base.maxWidth}
-          lineHeight={1.45}
-          letterSpacing={-0.015}
-          color={line.link ? "#4ea1ff" : "#ffffff"}
-          anchorX="center"
-          anchorY="top"
-          textAlign="center"
-          material-opacity={spring.opacity}
-          material-transparent
-          onClick={
-            line.link
-              ? () => window.open(line.link, "_blank", "noopener,noreferrer")
-              : undefined
-          }
-          onPointerOver={
-            line.link
-              ? () => (document.body.style.cursor = "pointer")
-              : undefined
-          }
-          onPointerOut={
-            line.link
-              ? () => (document.body.style.cursor = "default")
-              : undefined
-          }
-        >
-          {line.text}
-        </AnimatedText>
-      ))}
+      {lines.map((line, index) => {
+        // Si colonne
+        if (line.cols) {
+          const colCount = line.cols.length;
+          const colSpacing = (base.maxWidth / colCount) * 0.9; // réduit l’écart horizontal
+
+          return line.cols.map((text, colIndex) => {
+            // console.log("colIndex", colIndex);
+            // console.log("position", [
+            //   positionX + (colIndex - (colCount - 1) / 2) * colSpacing,
+            //   spring.y.get() - index * base.lineGap,
+            //   positionZ,
+            // ]);
+            return (
+              <AnimatedText
+                key={colIndex}
+                position={[
+                  positionX, // centre autour de positionX
+                  spring.y.get() - index * base.lineGap, // ligne verticale
+                  positionZ + (colIndex - (colCount - 1) / 2) * colSpacing,
+                ]}
+                rotation={rotation}
+                font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
+                fontSize={base.fontSize}
+                maxWidth={colSpacing * 0.9} // largeur par colonne
+                lineHeight={1.45}
+                letterSpacing={-0.015}
+                color="#ffffff"
+                anchorX="center"
+                anchorY="top"
+                textAlign="center"
+                material-opacity={spring.opacity}
+                material-transparent
+              >
+                {text}
+              </AnimatedText>
+            );
+          });
+        }
+
+        // Si texte simple ou lien
+        return (
+          <AnimatedText
+            key={index}
+            position={[
+              positionX,
+              spring.y.get() - index * base.lineGap,
+              positionZ,
+            ]}
+            rotation={rotation}
+            font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
+            fontSize={base.fontSize}
+            maxWidth={base.maxWidth}
+            lineHeight={1.45}
+            letterSpacing={-0.015}
+            color={line.link ? "#4ea1ff" : "#ffffff"}
+            anchorX="center"
+            anchorY="top"
+            textAlign="center"
+            material-opacity={spring.opacity}
+            material-transparent
+            onClick={
+              line.link
+                ? () => window.open(line.link, "_blank", "noopener,noreferrer")
+                : undefined
+            }
+            onPointerOver={
+              line.link
+                ? () => (document.body.style.cursor = "pointer")
+                : undefined
+            }
+            onPointerOut={
+              line.link
+                ? () => (document.body.style.cursor = "default")
+                : undefined
+            }
+          >
+            {line.text}
+          </AnimatedText>
+        );
+      })}
     </group>
   );
 }
