@@ -87,7 +87,7 @@ const Cube = () => {
   });
 
   useEffect(() => {
-    if (!boxRef.current) return;
+    if (!boxRef.current || isMobile) return;
 
     const geo = boxRef.current.geometry;
 
@@ -96,7 +96,7 @@ const Cube = () => {
       "uv2",
       new THREE.BufferAttribute(geo.attributes.uv.array, 2),
     );
-  }, []);
+  }, [isMobile]);
 
   // --- Drag handlers ---
   const onPointerDown = (e: any) => {
