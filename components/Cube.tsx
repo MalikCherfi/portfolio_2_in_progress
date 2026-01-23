@@ -58,11 +58,16 @@ const Cube = () => {
       groupRef.current.position.y +=
         (targetY - groupRef.current.position.y) * 0.1;
 
-      groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
-      groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
-
-      velocity.current.x *= 0.95;
-      velocity.current.y *= 0.95;
+      // si zoomCamera, stopper la rotation et l’inertie
+      if (!zoomCamera) {
+        groupRef.current.rotateOnWorldAxis(axisY, velocity.current.x);
+        groupRef.current.rotateOnWorldAxis(axisX, velocity.current.y);
+        velocity.current.x *= 0.95;
+        velocity.current.y *= 0.95;
+      } else {
+        velocity.current.x = 0;
+        velocity.current.y = 0;
+      }
     } else {
       const targetPos = new THREE.Vector3(0, targetY, 0);
       groupRef.current.position.lerp(targetPos, 0.1);
@@ -101,7 +106,7 @@ const Cube = () => {
   // --- Drag handlers ---
   const onPointerDown = (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.preventDefault()
+    e.nativeEvent.preventDefault();
     setIsDragging(true);
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
@@ -111,7 +116,7 @@ const Cube = () => {
   };
   const onPointerMove = (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.preventDefault()
+    e.nativeEvent.preventDefault();
     if (!isDragging || !groupRef.current) return;
     const dx = e.clientX - prev.current.x;
     const dy = e.clientY - prev.current.y;
@@ -125,7 +130,7 @@ const Cube = () => {
   };
   const onPointerUp = (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.preventDefault()
+    e.nativeEvent.preventDefault();
     setIsDragging(false);
     try {
       (e.target as Element).releasePointerCapture?.(e.pointerId);
