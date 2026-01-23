@@ -17,6 +17,9 @@ type ArrayItem = {
 
 const BackgroundGeometry = () => {
   const { camera, gl } = useThree();
+  const fps = 30;
+  const interval = 1 / fps;
+  const acc = useRef(0);
 
   // --- INITIAL ITEMS ---
   const [items, setItems] = useState<ArrayItem[]>(() => {
@@ -142,7 +145,11 @@ const BackgroundGeometry = () => {
   );
 
   // --- USE FRAME : INERTIA + DRAG ---
-  useFrame(() => {
+  useFrame((_, delta) => {
+    acc.current += delta;
+    if (acc.current < interval) return;
+    acc.current = 0;
+
     setItems((prev) =>
       prev.map((item, idx) => {
         if (draggingIndex.current === idx) return item;
