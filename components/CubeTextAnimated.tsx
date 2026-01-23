@@ -69,38 +69,30 @@ export default function CubeTextAnimated({
           const colCount = line.cols.length;
           const colSpacing = (base.maxWidth / colCount) * 0.9; // réduit l’écart horizontal
 
-          return line.cols.map((text, colIndex) => {
-            // console.log("colIndex", colIndex);
-            // console.log("position", [
-            //   positionX + (colIndex - (colCount - 1) / 2) * colSpacing,
-            //   spring.y.get() - index * base.lineGap,
-            //   positionZ,
-            // ]);
-            return (
-              <AnimatedText
-                key={colIndex}
-                position={[
-                  positionX, // centre autour de positionX
-                  spring.y.get() - index * base.lineGap, // ligne verticale
-                  positionZ + (colIndex - (colCount - 1) / 2) * colSpacing,
-                ]}
-                rotation={rotation}
-                font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
-                fontSize={base.fontSize}
-                maxWidth={colSpacing * 0.9} // largeur par colonne
-                lineHeight={1.45}
-                letterSpacing={-0.015}
-                color="#ffffff"
-                anchorX="center"
-                anchorY="top"
-                textAlign="center"
-                material-opacity={spring.opacity}
-                material-transparent
-              >
-                {text}
-              </AnimatedText>
-            );
-          });
+          return line.cols.map((text, colIndex) => (
+            <AnimatedText
+              key={colIndex}
+              position={[
+                positionX, // centre autour de positionX
+                spring.y.get() - index * base.lineGap, // ligne verticale
+                positionZ + (colIndex - (colCount - 1) / 2) * colSpacing,
+              ]}
+              rotation={rotation}
+              font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
+              fontSize={base.fontSize}
+              maxWidth={colSpacing * 0.9} // largeur par colonne
+              lineHeight={1.45}
+              letterSpacing={-0.015}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="top"
+              textAlign="center"
+              material-opacity={spring.opacity}
+              material-transparent
+            >
+              {text}
+            </AnimatedText>
+          ));
         }
 
         // Si texte simple ou lien
