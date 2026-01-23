@@ -42,6 +42,7 @@ export default function Home() {
       </div>
 
       <Canvas
+        style={{ touchAction: "none" }}
         shadows={false}
         camera={{ position: [0, 0, 20], fov: 45 }}
         gl={{
