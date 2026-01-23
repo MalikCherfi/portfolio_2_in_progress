@@ -19,8 +19,10 @@ const BackgroundGeometry = () => {
   const { camera, gl } = useThree();
 
   // --- INITIAL ITEMS ---
-  const [items, setItems] = useState<ArrayItem[]>(() =>
-    Array.from({ length: 160 }, () => {
+  const [items, setItems] = useState<ArrayItem[]>(() => {
+    const mobile = window.innerWidth <= 1000;
+    const length = mobile ? 40 : 160;
+    return Array.from({ length }, () => {
       const z =
         Math.random() > 0.2 ? -3 - Math.random() * 8 : 3 + Math.random() * 8;
       return {
@@ -30,8 +32,8 @@ const BackgroundGeometry = () => {
         type: z > 4 ? "sphere" : Math.random() > 0.7 ? "sphere" : "cube",
         velocity: { x: 0, y: 0 },
       };
-    }),
-  );
+    });
+  });
 
   // --- REFS POUR DRAG ET CALCULS TEMP ---
   const draggingIndex = useRef<number | null>(null);
