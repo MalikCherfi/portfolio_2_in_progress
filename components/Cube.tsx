@@ -101,6 +101,7 @@ const Cube = () => {
   // --- Drag handlers ---
   const onPointerDown = (e: any) => {
     e.stopPropagation();
+    e.nativeEvent.preventDefault()
     setIsDragging(true);
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
@@ -110,6 +111,7 @@ const Cube = () => {
   };
   const onPointerMove = (e: any) => {
     e.stopPropagation();
+    e.nativeEvent.preventDefault()
     if (!isDragging || !groupRef.current) return;
     const dx = e.clientX - prev.current.x;
     const dy = e.clientY - prev.current.y;
@@ -123,6 +125,7 @@ const Cube = () => {
   };
   const onPointerUp = (e: any) => {
     e.stopPropagation();
+    e.nativeEvent.preventDefault()
     setIsDragging(false);
     try {
       (e.target as Element).releasePointerCapture?.(e.pointerId);
