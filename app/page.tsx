@@ -5,6 +5,7 @@ import Scene from "../components/Scene";
 import { useCubeStore } from "@/stores/cubeStore";
 import { RotateCcw, ArrowLeft } from "lucide-react";
 import * as THREE from "three";
+import { Stats } from "@react-three/drei";
 
 export default function Home() {
   const setRotate = useCubeStore((state) => state.setRotate);
@@ -41,18 +42,20 @@ export default function Home() {
       </div>
 
       <Canvas
-        shadows
+        shadows={false}
         camera={{ position: [0, 0, 20], fov: 45 }}
         gl={{
-          antialias: true,
+          antialias: false,
           toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.2,
           outputColorSpace: THREE.SRGBColorSpace,
+          powerPreference: "high-performance",
+          stencil: false,
+          preserveDrawingBuffer: false,
         }}
-        onCreated={({ gl }) => {
-          gl.toneMappingExposure = 1.2;
-        }}
-        dpr={[1, 2]} // performance
+        dpr={[1, 2]}
       >
+        <Stats />
         <Scene />
       </Canvas>
     </div>
