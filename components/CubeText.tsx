@@ -31,7 +31,7 @@ const CubeText = ({ targetQuaternion }) => {
       rotateToFace({ face, targetQuaternion, setRotate });
       setRotate({ reset: false, target_face: true, face });
       setZoomCamera(true);
-      setTimeout(() => setZoomDone(true), 1500);
+      setTimeout(() => setZoomDone(true), 1300);
     }
   };
 
