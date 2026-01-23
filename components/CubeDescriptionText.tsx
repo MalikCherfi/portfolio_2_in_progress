@@ -8,7 +8,7 @@ const CubeDescriptionText = () => {
       positionZ: 2.61,
       lines: [
         {
-          text: "Bienvenue sur mon portfolio. Découvrez mes compétences et mon expérience. Je suis Malik Cherfi, développeur web passionné par la création d'expériences numériques innovantes et performantes. Explorez mes projets et n'hésitez pas à me contacter pour collaborer !",
+          text: "Bienvenue sur mon portfolio. Découvrez mes compétences et mon expérience.\nJe suis Malik Cherfi, développeur web passionné par la création d'expériences numériques innovantes et performantes. Explorez mes projets et n'hésitez pas à me contacter pour collaborer !",
         },
       ],
     },
