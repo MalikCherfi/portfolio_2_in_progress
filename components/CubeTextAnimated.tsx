@@ -61,41 +61,68 @@ export default function CubeTextAnimated({
     groupRef.current.visible = perspectiveCamera.position.z <= 18;
   });
 
+  const getColumnCount = () => {
+    const w = window.innerWidth;
+    if (w < 1100) return 2;
+    return 4;
+  };
+
+  const estimateLineCount = (text: string, maxWidth: number) => {
+    // estimation grossière mais stable
+    const avgCharWidth = base.fontSize * 0.6;
+    const charsPerLine = maxWidth / avgCharWidth;
+    return Math.ceil(text.length / charsPerLine);
+  };
+
   return (
     <group ref={groupRef}>
       {lines.map((line, index) => {
-        // Si colonne
-        if (line.cols) {
-          const colCount = line.cols.length;
-          const colSpacing = (base.maxWidth / colCount) * 0.9; // réduit l’écart horizontal
+        let currentY = spring.y.get();
 
-          return line.cols.map((text, colIndex) => (
-            <AnimatedText
-              key={colIndex}
-              position={[
-                positionX, // centre autour de positionX
-                spring.y.get() - index * base.lineGap, // ligne verticale
-                positionZ + (colIndex - (colCount - 1) / 2) * colSpacing,
-              ]}
-              rotation={rotation}
-              font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
-              fontSize={base.fontSize}
-              maxWidth={colSpacing * 0.9} // largeur par colonne
-              lineHeight={1.45}
-              letterSpacing={-0.015}
-              color="#ffffff"
-              anchorX="center"
-              anchorY="top"
-              textAlign="center"
-              material-opacity={spring.opacity}
-              material-transparent
-            >
-              {text}
-            </AnimatedText>
-          ));
+        if (line.cols) {
+          const colCount = getColumnCount();
+          const colWidth = base.maxWidth / colCount;
+          const rows = Math.ceil(line.cols.length / colCount);
+
+          const elements = [];
+
+          for (let i = 0; i < line.cols.length; i++) {
+            const col = i % colCount;
+            const row = Math.floor(i / colCount);
+
+            const text = line.cols[i];
+            const lineCount = estimateLineCount(text, colWidth);
+
+            elements.push(
+              <AnimatedText
+                key={`${index}-${i}`}
+                position={[
+                  positionX,
+                  currentY - row * base.lineGap * lineCount,
+                  positionZ + (col - (colCount - 1) / 2) * colWidth,
+                ]}
+                rotation={rotation}
+                font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
+                fontSize={base.fontSize}
+                maxWidth={colWidth * 0.9}
+                lineHeight={1.3}
+                anchorX="center"
+                anchorY="top"
+                textAlign="center"
+                material-opacity={spring.opacity}
+                material-transparent
+              >
+                {text}
+              </AnimatedText>,
+            );
+          }
+
+          // 🔥 on décale le curseur Y pour la prochaine ligne
+          currentY -= rows * base.lineGap * 1.6;
+
+          return elements;
         }
 
-        // Si texte simple ou lien
         return (
           <AnimatedText
             key={index}
