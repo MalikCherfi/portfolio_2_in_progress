@@ -33,11 +33,10 @@ const CubeDescriptionText = () => {
       positionZ: 0,
       rotation: [0, -Math.PI / 2 + Math.PI, 0] as [number, number, number],
       lines: [
-        { cols: ["JavaScript", "MongoDB"] },
-        { cols: ["TypeScript", "PostgreSQL"] },
-        { cols: ["React / Next.js", "Prisma"] },
-        { cols: ["Node.js", "Three.js"] },
-        { cols: ["Tailwind CSS", "Docker"] },
+        { cols: ["React", "NodeJs", "VueJs", "NextJs"] },
+        { cols: ["NuxtJs", "GitLab", "MongoDb", "MySql"] },
+        { cols: ["Tailwind CSS", "Javascript", "Typescript", "Langage SCRUM"] },
+        { cols: ["Jest", "React Three Fiber", "Drei", "Github"] },
       ],
     },
     {
