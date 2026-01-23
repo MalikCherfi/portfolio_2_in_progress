@@ -13,6 +13,8 @@ type CubeStore = {
   setBounceY: (y: number) => void;
   zoomCamera: boolean;
   setZoomCamera: (zoom: boolean) => void;
+  zoomDone: boolean;
+  setZoomDone: (zoom: boolean) => void;
 };
 
 export const useCubeStore = create<CubeStore>((set) => ({
@@ -24,4 +26,7 @@ export const useCubeStore = create<CubeStore>((set) => ({
 
   zoomCamera: false,
   setZoomCamera: (zoom) => set({ zoomCamera: zoom }),
+
+  zoomDone: false,
+  setZoomDone: (zoom) => set({ zoomDone: zoom }),
 }));

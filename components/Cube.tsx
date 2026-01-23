@@ -5,7 +5,7 @@ import { useCubeStore } from "@/stores/cubeStore";
 import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
-import CubeTextAnimated from "./CubeTextAnimated";
+import CubeDescriptionText from "./CubeDescriptionText";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -27,8 +27,6 @@ const Cube = () => {
   const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
 
-  const [zoomDone, setZoomDone] = useState(false);
-
   // --- Frame loop ---
   useFrame(() => {
     if (!groupRef.current) return;
@@ -40,12 +38,6 @@ const Cube = () => {
     const targetZ = zoomCamera ? 5 : 20;
     camera.position.lerp(new THREE.Vector3(0, 0, targetZ), 0.05);
     camera.lookAt(0, 0, 0);
-
-    if (zoomCamera && Math.abs(camera.position.z - 5) < 0.01) {
-      setZoomDone(true);
-    } else if (!zoomCamera) {
-      setZoomDone(false);
-    }
 
     // ---------------- TARGET Y ----------------
     let targetY = 0;
@@ -148,7 +140,7 @@ const Cube = () => {
       <CubeText targetQuaternion={targetQuaternion} />
 
       {/* Texte descriptif animé après zoom */}
-      <CubeTextAnimated zoomDone={zoomDone} />
+      <CubeDescriptionText />
 
       <RoundedBox
         ref={boxRef}
