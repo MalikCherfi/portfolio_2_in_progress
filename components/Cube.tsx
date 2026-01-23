@@ -6,12 +6,14 @@ import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
 import CubeDescriptionText from "./CubeDescriptionText";
+import { useIsMobile } from "../utils/useIsMobile";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
   const velocity = useRef({ x: 0, y: 0 });
   const prev = useRef({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const isMobile = useIsMobile();
 
   const { rotate, setRotate, zoomCamera } = useCubeStore();
   const clock = useRef(new THREE.Clock());
@@ -85,7 +87,7 @@ const Cube = () => {
   });
 
   useEffect(() => {
-    if (!boxRef.current) return;
+    if (!boxRef.current || isMobile) return;
 
     const geo = boxRef.current.geometry;
 
@@ -94,7 +96,7 @@ const Cube = () => {
       "uv2",
       new THREE.BufferAttribute(geo.attributes.uv.array, 2),
     );
-  }, []);
+  }, [isMobile]);
 
   // --- Drag handlers ---
   const onPointerDown = (e: any) => {
@@ -147,15 +149,15 @@ const Cube = () => {
         args={[5.2, 5.2, 5.2]}
         radius={0.04}
         smoothness={4}
-        castShadow
-        receiveShadow
+        castShadow={!isMobile}
+        receiveShadow={!isMobile}
       >
         <meshStandardMaterial
           color="#B6465F"
           roughness={0.55}
           metalness={0}
-          aoMap={ao}
-          aoMapIntensity={0.1}
+          aoMap={isMobile ? undefined : ao}
+          aoMapIntensity={isMobile ? 0 : 0.1}
           dithering
         />
       </RoundedBox>

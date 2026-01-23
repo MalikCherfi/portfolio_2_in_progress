@@ -5,9 +5,11 @@ import * as THREE from "three";
 import BackgroundGeometry from "./BackgroundGeometry";
 import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import { useIsMobile } from "../utils/useIsMobile";
 
 const Scene = () => {
   const { bounceY, zoomCamera } = useCubeStore();
+  const isMobile = useIsMobile();
 
   const rightLight = useMemo(() => {
     const light = new THREE.RectAreaLight("#ffffff", 3, 2, 2);
@@ -55,10 +57,11 @@ const Scene = () => {
       <ContactShadows
         position={[0, -5, 0]}
         opacity={0.6}
-        width={3 + bounceY}
-        height={3 + bounceY}
+        width={isMobile ? 2 : 3 + bounceY}
+        height={isMobile ? 2 : 3 + bounceY}
         blur={4}
-        far={15}
+        far={isMobile ? 10 : 15}
+        frames={2}
       />
     </>
   );
