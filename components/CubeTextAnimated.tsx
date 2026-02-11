@@ -11,7 +11,8 @@ const AnimatedText = animated(Text);
 type Line = {
   text?: string;
   link?: string;
-  cols?: string[]; // si on veut plusieurs colonnes
+  cols?: string[];
+  onClick?: () => void;
 };
 
 type Props = {
@@ -27,7 +28,7 @@ export default function CubeTextAnimated({
   rotation,
   lines,
 }: Props) {
-  const { zoomDone } = useCubeStore();
+  const { zoomDone, isTextClicked } = useCubeStore();
   const { viewport, camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
@@ -52,7 +53,7 @@ export default function CubeTextAnimated({
 
   const spring = useSpring({
     from: { y: targetY, opacity: 0 },
-    to: { y: targetY, opacity: zoomDone ? 1 : 0 },
+    to: { y: targetY, opacity: zoomDone && !isTextClicked ? 1 : 0 },
     config: { duration: 1000, easing: easings.easeInOutSine },
   });
 
@@ -143,18 +144,24 @@ export default function CubeTextAnimated({
             textAlign="center"
             material-opacity={spring.opacity}
             material-transparent
-            onClick={
-              line.link
-                ? () => window.open(line.link, "_blank", "noopener,noreferrer")
-                : undefined
-            }
+            onClick={() => {
+              if (line.link) {
+                return window.open(line.link, "_blank", "noopener,noreferrer");
+              }
+
+              if (line.onClick) {
+                return line.onClick();
+              }
+
+              return undefined;
+            }}
             onPointerOver={
-              line.link
+              line.link || line.onClick
                 ? () => (document.body.style.cursor = "pointer")
                 : undefined
             }
             onPointerOut={
-              line.link
+              line.link || line.onClick
                 ? () => (document.body.style.cursor = "default")
                 : undefined
             }
