@@ -15,6 +15,8 @@ type CubeStore = {
   setZoomCamera: (zoom: boolean) => void;
   zoomDone: boolean;
   setZoomDone: (zoom: boolean) => void;
+  isTextClicked: boolean;
+  setIsTextClicked: (clicked: boolean) => void;
 };
 
 export const useCubeStore = create<CubeStore>((set) => ({
@@ -29,4 +31,7 @@ export const useCubeStore = create<CubeStore>((set) => ({
 
   zoomDone: false,
   setZoomDone: (zoom) => set({ zoomDone: zoom }),
+
+  isTextClicked: false,
+  setIsTextClicked: (clicked) => set({ isTextClicked: clicked }),
 }));
