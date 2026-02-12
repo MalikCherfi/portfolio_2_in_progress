@@ -11,7 +11,7 @@ const AnimatedText = animated(Text);
 type Line = {
   text?: string;
   link?: string;
-  cols?: { text: string, link: string, onClick?: () => void }[];
+  cols?: { text: string; link: string; onClick?: () => void }[];
   onClick?: () => void;
 };
 
@@ -20,6 +20,7 @@ type Props = {
   positionZ: number;
   rotation?: [number, number, number];
   lines: Line[];
+  columnCount?: number;
 };
 
 export default function CubeTextAnimated({
@@ -27,6 +28,7 @@ export default function CubeTextAnimated({
   positionZ,
   rotation,
   lines,
+  columnCount
 }: Props) {
   const { zoomDone, isTextClicked, zoomCamera } = useCubeStore();
   const { camera } = useThree();
@@ -90,7 +92,7 @@ export default function CubeTextAnimated({
         let currentY = spring.y.get();
 
         if (line.cols) {
-          const colCount = getColumnCount();
+          const colCount = columnCount || getColumnCount();
           const colWidth = base.maxWidth / colCount;
           const rows = Math.ceil(line.cols.length / colCount);
 
