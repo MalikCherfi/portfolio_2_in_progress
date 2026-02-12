@@ -51,7 +51,7 @@ export default function CubeTextAnimated({
     return {
       fontSize,
       maxWidth,
-      lineGap: fontSize * 1.8,
+      lineGap: fontSize * 2,
     };
   }, [zoomCamera, camera.fov, camera.aspect]);
 
