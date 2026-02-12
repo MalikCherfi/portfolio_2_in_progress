@@ -106,7 +106,7 @@ const CubeText = ({ targetQuaternion }) => {
         onPointerMove={onPointerMove}
         onClick={onClick("left")}
       >
-        ABOUT ME
+        PROJECTS
       </Text>
     </>
   );
