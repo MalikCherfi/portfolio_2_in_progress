@@ -81,7 +81,7 @@ const CubeDescriptionText = () => {
               },
             },
             {
-              text: "G&F Occitanie solutions",
+              text: "Occitanie solutions",
               onClick: () => {
                 setIsTextClicked(true);
               },
