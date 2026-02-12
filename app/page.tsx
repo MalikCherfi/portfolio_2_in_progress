@@ -12,6 +12,8 @@ export default function Home() {
   const zoomCamera = useCubeStore((state) => state.zoomCamera);
   const setZoomCamera = useCubeStore((state) => state.setZoomCamera);
   const setZoomDone = useCubeStore((state) => state.setZoomDone);
+  const isTextClicked = useCubeStore((state) => state.isTextClicked);
+  const setIsTextClicked = useCubeStore((state) => state.setIsTextClicked);
 
   return (
     <div className="w-screen h-screen bg-gradient-to-t from-[#CE6A6B] to-[#EBACA2]">
@@ -28,6 +30,12 @@ export default function Home() {
         {zoomCamera && (
           <button
             onClick={() => {
+              if (isTextClicked) {
+                setIsTextClicked(false);
+                setZoomDone(true);
+                return;
+              }
+
               setZoomDone(false);
 
               setTimeout(() => {
