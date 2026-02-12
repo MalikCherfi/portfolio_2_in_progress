@@ -11,7 +11,7 @@ const AnimatedText = animated(Text);
 type Line = {
   text?: string;
   link?: string;
-  cols?: string[];
+  cols?: { text: string, link: string, onClick?: () => void }[];
   onClick?: () => void;
 };
 
@@ -28,8 +28,8 @@ export default function CubeTextAnimated({
   rotation,
   lines,
 }: Props) {
-  const { zoomDone, isTextClicked } = useCubeStore();
-  const { viewport, camera } = useThree();
+  const { zoomDone, isTextClicked, zoomCamera } = useCubeStore();
+  const { camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
 
@@ -37,19 +37,28 @@ export default function CubeTextAnimated({
   const base = useMemo(() => {
     const w = window.innerWidth;
     const fontSize = w < 600 ? 0.05 : w < 900 ? 0.06 : 0.07;
+
+    const distance = zoomCamera ? 5 : 20;
+
+    const fovRad = (camera.fov * Math.PI) / 180;
+
+    const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
+
+    const maxWidth = visibleHeight * camera.aspect * 0.45;
+
     return {
       fontSize,
-      maxWidth: viewport.width * viewport.height * 0.0056,
+      maxWidth,
       lineGap: fontSize * 1.8,
     };
-  }, [viewport]);
+  }, [zoomCamera, camera.fov, camera.aspect]);
 
   const { targetY } = useMemo(() => {
-    const distance = perspectiveCamera.position.z - 2.61;
+    const targetDistance = zoomCamera ? 5 - 2.61 : 20 - 2.61;
     const fovRad = (perspectiveCamera.fov * Math.PI) / 180;
-    const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
+    const visibleHeight = 2 * targetDistance * Math.tan(fovRad / 2);
     return { targetY: -visibleHeight / 4 };
-  }, [perspectiveCamera.position.z, perspectiveCamera.fov]);
+  }, [perspectiveCamera.fov, zoomCamera]);
 
   const spring = useSpring({
     from: { y: targetY, opacity: 0 },
@@ -91,7 +100,8 @@ export default function CubeTextAnimated({
             const col = i % colCount;
             const row = Math.floor(i / colCount);
 
-            const text = line.cols[i];
+            const text = line.cols[i].text;
+            const onClick = line.cols[i].onClick;
             const lineCount = estimateLineCount(text, colWidth);
 
             elements.push(
@@ -112,6 +122,23 @@ export default function CubeTextAnimated({
                 textAlign="center"
                 material-opacity={spring.opacity}
                 material-transparent
+                onClick={() => {
+                  if (onClick) {
+                    return onClick();
+                  }
+
+                  return undefined;
+                }}
+                onPointerOver={
+                  onClick
+                    ? () => (document.body.style.cursor = "pointer")
+                    : undefined
+                }
+                onPointerOut={
+                  onClick
+                    ? () => (document.body.style.cursor = "default")
+                    : undefined
+                }
               >
                 {text}
               </AnimatedText>,
