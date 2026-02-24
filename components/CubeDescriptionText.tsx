@@ -1,6 +1,9 @@
 import CubeTextAnimated from "./CubeTextAnimated";
+import { useCubeStore } from "@/stores/cubeStore";
 
 const CubeDescriptionText = () => {
+  const { setIsTextClicked, isTextClicked } = useCubeStore();
+
   const components = [
     {
       id: "welcome",
@@ -35,47 +38,93 @@ const CubeDescriptionText = () => {
       lines: [
         {
           cols: [
-            "React",
-            "NodeJs",
-            "VueJs",
-            "NextJs",
-            "NuxtJs",
-            "MongoDB",
-            "Prisma",
-            "Mongoose",
-            "MySQL",
-            "TypeScript",
-            "JavaScript",
-            "Tailwind CSS",
-            "ThreeJs",
-            "Drei",
-            "Jest",
-            "GitHub",
-            "GitLab",
+            { text: "React" },
+            { text: "NodeJs" },
+            { text: "VueJs" },
+            { text: "NextJs" },
+            { text: "NuxtJs" },
+            { text: "MongoDB" },
+            { text: "Prisma" },
+            { text: "Mongoose" },
+            { text: "MySQL" },
+            { text: "TypeScript" },
+            { text: "JavaScript" },
+            { text: "Tailwind CSS" },
+            { text: "ThreeJs" },
+            { text: "Drei" },
+            { text: "Jest" },
+            { text: "GitHub" },
+            { text: "GitLab" },
           ],
         },
       ],
     },
     {
-      id: "about",
+      id: "projects",
       positionX: -2.61,
       positionZ: 0,
       rotation: [0, Math.PI / 2 + Math.PI, 0] as [number, number, number],
-      lines: [{ text: "LEARN MORE ABOUT ME" }],
+      columnCount: 2,
+      lines: [
+        {
+          cols: [
+            {
+              text: "Nomade Process",
+              onClick: () => {
+                setIsTextClicked(true, "nomade_process");
+              },
+            },
+            {
+              text: "Ani Seniors",
+              onClick: () => {
+                setIsTextClicked(true, "ani_seniors");
+              },
+            },
+            {
+              text: "Occitanie solutions",
+              onClick: () => {
+                setIsTextClicked(true, "occitanie_solutions");
+              },
+            },
+            {
+              text: "Démateriz",
+              onClick: () => {
+                setIsTextClicked(true, "demateriz");
+              },
+            },
+            {
+              text: "VBR",
+              onClick: () => {
+                setIsTextClicked(true, "vbr");
+              },
+            },
+            {
+              text: "ADM",
+              onClick: () => {
+                setIsTextClicked(true, "adm");
+              },
+            },
+          ],
+        },
+      ],
     },
   ];
 
   return (
     <>
-      {components.map((comp) => (
-        <CubeTextAnimated
-          key={comp.id}
-          positionX={comp.positionX}
-          positionZ={comp.positionZ}
-          rotation={comp.rotation}
-          lines={comp.lines}
-        />
-      ))}
+      {components.map(
+        (comp) =>
+          !isTextClicked.clicked && (
+            <CubeTextAnimated
+              key={comp.id}
+              positionX={comp.positionX}
+              positionZ={comp.positionZ}
+              rotation={comp.rotation}
+              lines={comp.lines}
+              columnCount={comp.columnCount}
+            />
+          ),
+      )}
     </>
   );
 };

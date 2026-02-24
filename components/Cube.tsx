@@ -7,6 +7,7 @@ import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
 import CubeDescriptionText from "./CubeDescriptionText";
 import { useIsMobile } from "../utils/useIsMobile";
+import CubeSubDescriptionText from "./CubeSubDescriptionText";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -106,7 +107,6 @@ const Cube = () => {
   // --- Drag handlers ---
   const onPointerDown = (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.preventDefault();
     setIsDragging(true);
     prev.current.x = e.clientX;
     prev.current.y = e.clientY;
@@ -116,7 +116,6 @@ const Cube = () => {
   };
   const onPointerMove = (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.preventDefault();
     if (!isDragging || !groupRef.current) return;
     const dx = e.clientX - prev.current.x;
     const dy = e.clientY - prev.current.y;
@@ -130,7 +129,6 @@ const Cube = () => {
   };
   const onPointerUp = (e: any) => {
     e.stopPropagation();
-    e.nativeEvent.preventDefault();
     setIsDragging(false);
     try {
       (e.target as Element).releasePointerCapture?.(e.pointerId);
@@ -146,11 +144,10 @@ const Cube = () => {
       onPointerLeave={!zoomCamera && onPointerUp}
       onPointerCancel={!zoomCamera && onPointerUp}
     >
-      {/* CubeText pour les faces cliquables */}
       <CubeText targetQuaternion={targetQuaternion} />
 
-      {/* Texte descriptif animé après zoom */}
       <CubeDescriptionText />
+      <CubeSubDescriptionText />
 
       <RoundedBox
         ref={boxRef}
