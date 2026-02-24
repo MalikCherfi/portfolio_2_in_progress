@@ -2,7 +2,7 @@ import CubeTextAnimated from "./CubeTextAnimated";
 import { useCubeStore } from "@/stores/cubeStore";
 
 const CubeDescriptionText = () => {
-  const { setIsTextClicked } = useCubeStore();
+  const { setIsTextClicked, isTextClicked } = useCubeStore();
 
   const components = [
     {
@@ -71,37 +71,37 @@ const CubeDescriptionText = () => {
             {
               text: "Nomade Process",
               onClick: () => {
-                setIsTextClicked(true);
+                setIsTextClicked(true, "nomade_process");
               },
             },
             {
               text: "Ani Seniors",
               onClick: () => {
-                setIsTextClicked(true);
+                setIsTextClicked(true, "ani_seniors");
               },
             },
             {
               text: "Occitanie solutions",
               onClick: () => {
-                setIsTextClicked(true);
+                setIsTextClicked(true, "occitanie_solutions");
               },
             },
             {
               text: "Démateriz",
               onClick: () => {
-                setIsTextClicked(true);
+                setIsTextClicked(true, "demateriz");
               },
             },
             {
               text: "VBR",
               onClick: () => {
-                setIsTextClicked(true);
+                setIsTextClicked(true, "vbr");
               },
             },
             {
               text: "ADM",
               onClick: () => {
-                setIsTextClicked(true);
+                setIsTextClicked(true, "adm");
               },
             },
           ],
@@ -112,16 +112,19 @@ const CubeDescriptionText = () => {
 
   return (
     <>
-      {components.map((comp) => (
-        <CubeTextAnimated
-          key={comp.id}
-          positionX={comp.positionX}
-          positionZ={comp.positionZ}
-          rotation={comp.rotation}
-          lines={comp.lines}
-          columnCount={comp.columnCount}
-        />
-      ))}
+      {components.map(
+        (comp) =>
+          !isTextClicked.clicked && (
+            <CubeTextAnimated
+              key={comp.id}
+              positionX={comp.positionX}
+              positionZ={comp.positionZ}
+              rotation={comp.rotation}
+              lines={comp.lines}
+              columnCount={comp.columnCount}
+            />
+          ),
+      )}
     </>
   );
 };
