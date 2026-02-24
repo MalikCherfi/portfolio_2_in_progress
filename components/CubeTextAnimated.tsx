@@ -64,7 +64,7 @@ export default function CubeTextAnimated({
 
   const spring = useSpring({
     from: { y: targetY, opacity: 0 },
-    to: { y: targetY, opacity: zoomDone && !isTextClicked ? 1 : 0 },
+    to: { y: targetY, opacity: zoomDone && !isTextClicked.clicked ? 1 : 0 },
     config: { duration: 1000, easing: easings.easeInOutSine },
   });
 
