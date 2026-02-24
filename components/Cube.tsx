@@ -7,6 +7,7 @@ import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
 import CubeDescriptionText from "./CubeDescriptionText";
 import { useIsMobile } from "../utils/useIsMobile";
+import CubeSubDescriptionText from "./CubeSubDescriptionText";
 
 const Cube = () => {
   const groupRef = useRef<THREE.Group | null>(null);
@@ -143,11 +144,10 @@ const Cube = () => {
       onPointerLeave={!zoomCamera && onPointerUp}
       onPointerCancel={!zoomCamera && onPointerUp}
     >
-      {/* CubeText pour les faces cliquables */}
       <CubeText targetQuaternion={targetQuaternion} />
 
-      {/* Texte descriptif animé après zoom */}
       <CubeDescriptionText />
+      <CubeSubDescriptionText />
 
       <RoundedBox
         ref={boxRef}
