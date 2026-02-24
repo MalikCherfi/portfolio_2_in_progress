@@ -30,8 +30,8 @@ export default function Home() {
         {zoomCamera && (
           <button
             onClick={() => {
-              if (isTextClicked) {
-                setIsTextClicked(false);
+              if (isTextClicked.clicked) {
+                setIsTextClicked(false, "");
                 setZoomDone(true);
                 return;
               }
