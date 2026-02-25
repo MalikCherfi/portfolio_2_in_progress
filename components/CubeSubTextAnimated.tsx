@@ -3,7 +3,7 @@ import { animated, useSpring, easings } from "@react-spring/three";
 import { useThree, useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 import { PerspectiveCamera } from "three";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 const AnimatedText = animated(Text);
@@ -22,6 +22,11 @@ type Props = {
   lines: Line[];
 };
 
+type HeightInfo = {
+  totalHeight: number;
+  addGap?: boolean;
+};
+
 export default function CubeSubTextAnimated({
   positionX,
   positionZ,
@@ -33,23 +38,24 @@ export default function CubeSubTextAnimated({
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
 
-  // base fontSize et gaps
+  const [heights, setHeights] = useState<HeightInfo[]>(
+    Array(lines.length).fill({ totalHeight: 0 }),
+  );
+
+  // base fontSize
   const base = useMemo(() => {
     const w = window.innerWidth;
     const fontSize = w < 600 ? 0.05 : w < 900 ? 0.06 : 0.07;
 
     const distance = zoomCamera ? 5 : 20;
-
     const fovRad = (camera.fov * Math.PI) / 180;
-
     const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
-
     const maxWidth = visibleHeight * camera.aspect * 0.45;
 
     return {
       fontSize,
       maxWidth,
-      lineGap: fontSize * 2,
+      lineHeight: 1.45,
     };
   }, [zoomCamera, camera.fov, camera.aspect]);
 
@@ -71,21 +77,38 @@ export default function CubeSubTextAnimated({
     groupRef.current.visible = perspectiveCamera.position.z <= 18;
   });
 
+  // 🔥 calcul des offsets cumulés
+  const offsets = useMemo(() => {
+    const arr: number[] = [];
+    let cumulative = 0;
+
+    for (let i = 0; i < heights.length; i++) {
+      arr.push(cumulative);
+
+      const h = heights[i]?.totalHeight ?? 0;
+
+      cumulative += h;
+
+      // espace manuel entre blocs
+      if (heights[i]?.addGap) {
+        cumulative += base.fontSize * base.lineHeight;
+      }
+    }
+
+    return arr;
+  }, [heights, base.fontSize, base.lineHeight]);
+
   return (
     <group ref={groupRef}>
       {lines.map((line, index) => (
         <AnimatedText
           key={index}
-          position={[
-            positionX,
-            spring.y.get() - index * base.lineGap,
-            positionZ,
-          ]}
+          position={[positionX, spring.y.get() - offsets[index], positionZ]}
           rotation={rotation}
           font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
           fontSize={base.fontSize}
           maxWidth={base.maxWidth}
-          lineHeight={1.45}
+          lineHeight={base.lineHeight}
           letterSpacing={-0.015}
           color={line.link ? "#4ea1ff" : "#ffffff"}
           anchorX="center"
@@ -93,27 +116,24 @@ export default function CubeSubTextAnimated({
           textAlign="center"
           material-opacity={spring.opacity}
           material-transparent
+          onSync={(self) => {
+            const info = self.textRenderInfo;
+            if (!info) return;
+
+            const totalHeight = info.blockBounds[3] - info.blockBounds[1];
+
+            setHeights((prev) => {
+              const copy = [...prev];
+              copy[index] = { totalHeight, addGap: line.addGap } as any;
+              return copy;
+            });
+          }}
           onClick={() => {
             if (line.link) {
               return window.open(line.link, "_blank", "noopener,noreferrer");
             }
-
-            if (line.onClick) {
-              return line.onClick();
-            }
-
-            return undefined;
+            if (line.onClick) return line.onClick();
           }}
-          onPointerOver={
-            line.link || line.onClick
-              ? () => (document.body.style.cursor = "pointer")
-              : undefined
-          }
-          onPointerOut={
-            line.link || line.onClick
-              ? () => (document.body.style.cursor = "default")
-              : undefined
-          }
         >
           {line.text}
         </AnimatedText>
