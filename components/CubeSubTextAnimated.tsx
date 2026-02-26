@@ -3,7 +3,7 @@ import { animated, useSpring, easings } from "@react-spring/three";
 import { useThree, useFrame } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
 import { PerspectiveCamera } from "three";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 
 const AnimatedText = animated(Text);
@@ -37,9 +37,14 @@ export default function CubeSubTextAnimated({
   const { camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
+  const scrollTarget = useRef(0); // où on VEUT aller
+  const currentScroll = useRef(0);
 
   const [heights, setHeights] = useState<HeightInfo[]>(
     Array(lines.length).fill({ totalHeight: 0 }),
+  );
+  const [lineOpacities, setLineOpacities] = useState<number[]>(
+    Array(lines.length).fill(1),
   );
 
   // base fontSize
@@ -56,6 +61,7 @@ export default function CubeSubTextAnimated({
       fontSize,
       maxWidth,
       lineHeight: 1.45,
+      visibleHeight,
     };
   }, [zoomCamera, camera.fov, camera.aspect]);
 
@@ -98,6 +104,81 @@ export default function CubeSubTextAnimated({
     return arr;
   }, [heights, base.fontSize, base.lineHeight]);
 
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      scrollTarget.current += e.deltaY * 0.002;
+
+      console.log("scrollTarget:", scrollTarget.current);
+    };
+
+    window.addEventListener("wheel", handleWheel);
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+
+    const min = 0; // limite basse
+    const max = 5; // limite haute
+
+    scrollTarget.current = THREE.MathUtils.clamp(
+      scrollTarget.current,
+      min,
+      max,
+    );
+
+    currentScroll.current = THREE.MathUtils.lerp(
+      currentScroll.current,
+      scrollTarget.current,
+      0.08,
+    );
+
+    groupRef.current.position.y = currentScroll.current;
+  });
+
+  useFrame(() => {
+    if (!groupRef.current) return;
+
+    const groupY = groupRef.current.position.y;
+
+    const visibleTop = base.visibleHeight / 8;
+    const visibleBottom = -base.visibleHeight / 3;
+
+    // console.log("groupY:", groupY, "visibleTop:", visibleTop, "visibleBottom:", visibleBottom);
+
+    const fadeDistance = 0.5;
+
+    const newOpacities = offsets.map((offset) => {
+      const y = groupY - offset;
+
+      const topFadeStart = visibleTop - fadeDistance;
+      const bottomFadeStart = visibleBottom + fadeDistance;
+
+      if (y > topFadeStart) {
+        return THREE.MathUtils.clamp(
+          1 - (y - topFadeStart) / fadeDistance,
+          0,
+          1,
+        );
+      }
+
+      if (y < bottomFadeStart) {
+        return THREE.MathUtils.clamp(
+          1 - (bottomFadeStart - y) / fadeDistance,
+          0,
+          1,
+        );
+      }
+
+      return 1;
+    });
+
+    setLineOpacities(newOpacities);
+  });
+
   return (
     <group ref={groupRef}>
       {lines.map((line, index) => (
@@ -114,7 +195,7 @@ export default function CubeSubTextAnimated({
           anchorX="center"
           anchorY="top"
           textAlign="center"
-          material-opacity={spring.opacity}
+          material-opacity={spring.opacity.to((o) => o * lineOpacities[index])}
           material-transparent
           onSync={(self) => {
             const info = self.textRenderInfo;
