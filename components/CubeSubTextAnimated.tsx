@@ -5,6 +5,7 @@ import { useCubeStore } from "@/stores/cubeStore";
 import { PerspectiveCamera } from "three";
 import { useMemo, useRef, useState, useEffect } from "react";
 import * as THREE from "three";
+import { handleTextOpacityOnScroll } from "../utils/handleTextOpacityOnScroll";
 
 const AnimatedText = animated(Text);
 
@@ -105,46 +106,15 @@ export default function CubeSubTextAnimated({
     groupRef.current.visible = perspectiveCamera.position.z <= 18;
 
     // Gère l'opacité des lignes
-    const groupY = groupRef.current.position.y;
-
-    const visibleTop = base.visibleHeight / 8;
-    const visibleBottom = -base.visibleHeight / 3;
-
-    const fadeDistance = 0.5;
-
-    const newOpacities = offsets.map((offset) => {
-      const y = groupY - offset;
-
-      const topFadeStart = visibleTop - fadeDistance;
-      const bottomFadeStart = visibleBottom + fadeDistance;
-
-      if (y > topFadeStart) {
-        return THREE.MathUtils.clamp(
-          1 - (y - topFadeStart) / fadeDistance,
-          0,
-          1,
-        );
-      }
-
-      if (y < bottomFadeStart) {
-        return THREE.MathUtils.clamp(
-          1 - (bottomFadeStart - y) / fadeDistance,
-          0,
-          1,
-        );
-      }
-
-      return 1;
-    });
-
-    lineOpacitiesRef.current = newOpacities;
-
-    textMeshRefs.current.forEach((mesh, i) => {
-      if (!mesh) return;
-      mesh.position.x = newOpacities[i] === 0 ? 9999 : positionX;
-      mesh.material.opacity =
-        spring.opacity.get() * lineOpacitiesRef.current[i];
-    });
+    handleTextOpacityOnScroll(
+      groupRef,
+      offsets,
+      base,
+      lineOpacitiesRef,
+      positionX,
+      spring,
+      textMeshRefs,
+    );
 
     // Gère le scroll
     const min = 0; // limite basse
