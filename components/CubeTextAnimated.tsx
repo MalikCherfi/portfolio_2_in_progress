@@ -11,8 +11,8 @@ const AnimatedText = animated(Text);
 type Line = {
   text?: string;
   link?: string;
-  cols?: { text: string; link: string; onClick?: () => void }[];
-  onClick?: () => void;
+  cols?: { text: string; onClick?: () => void }[];
+  onClick?: () => void
 };
 
 type Props = {
