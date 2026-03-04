@@ -31,7 +31,7 @@ export default function Home() {
           <button
             onClick={() => {
               if (isTextClicked.clicked) {
-                setIsTextClicked(false, "");
+                setIsTextClicked(false, undefined);
                 setZoomDone(true);
                 return;
               }
