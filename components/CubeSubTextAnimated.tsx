@@ -80,7 +80,62 @@ export default function CubeSubTextAnimated({
 
   useFrame(() => {
     if (!groupRef.current) return;
+
+    // Affiche le groupe seulement si la caméra est proches
     groupRef.current.visible = perspectiveCamera.position.z <= 18;
+
+    // Gère l'opacité des lignes
+    const groupY = groupRef.current.position.y;
+
+    const visibleTop = base.visibleHeight / 8;
+    const visibleBottom = -base.visibleHeight / 3;
+
+    const fadeDistance = 0.5;
+
+    const newOpacities = offsets.map((offset) => {
+      const y = groupY - offset;
+
+      const topFadeStart = visibleTop - fadeDistance;
+      const bottomFadeStart = visibleBottom + fadeDistance;
+
+      if (y > topFadeStart) {
+        return THREE.MathUtils.clamp(
+          1 - (y - topFadeStart) / fadeDistance,
+          0,
+          1,
+        );
+      }
+
+      if (y < bottomFadeStart) {
+        return THREE.MathUtils.clamp(
+          1 - (bottomFadeStart - y) / fadeDistance,
+          0,
+          1,
+        );
+      }
+
+      return 1;
+    });
+
+    setLineOpacities(newOpacities);
+
+    // Gère le scroll
+    const min = 0; // limite basse
+    const max = 5; // limite haute
+
+    scrollTarget.current = THREE.MathUtils.clamp(
+      scrollTarget.current,
+      min,
+      max,
+    );
+
+    currentScroll.current = THREE.MathUtils.lerp(
+      currentScroll.current,
+      scrollTarget.current,
+      0.08,
+    );
+
+    groupRef.current.position.y = currentScroll.current;
   });
 
   // 🔥 calcul des offsets cumulés
@@ -117,65 +172,6 @@ export default function CubeSubTextAnimated({
       window.removeEventListener("wheel", handleWheel);
     };
   }, []);
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-
-    const min = 0; // limite basse
-    const max = 5; // limite haute
-
-    scrollTarget.current = THREE.MathUtils.clamp(
-      scrollTarget.current,
-      min,
-      max,
-    );
-
-    currentScroll.current = THREE.MathUtils.lerp(
-      currentScroll.current,
-      scrollTarget.current,
-      0.08,
-    );
-
-    groupRef.current.position.y = currentScroll.current;
-  });
-
-  useFrame(() => {
-    if (!groupRef.current) return;
-
-    const groupY = groupRef.current.position.y;
-
-    const visibleTop = base.visibleHeight / 8;
-    const visibleBottom = -base.visibleHeight / 3;
-
-    const fadeDistance = 0.5;
-
-    const newOpacities = offsets.map((offset) => {
-      const y = groupY - offset;
-
-      const topFadeStart = visibleTop - fadeDistance;
-      const bottomFadeStart = visibleBottom + fadeDistance;
-
-      if (y > topFadeStart) {
-        return THREE.MathUtils.clamp(
-          1 - (y - topFadeStart) / fadeDistance,
-          0,
-          1,
-        );
-      }
-
-      if (y < bottomFadeStart) {
-        return THREE.MathUtils.clamp(
-          1 - (bottomFadeStart - y) / fadeDistance,
-          0,
-          1,
-        );
-      }
-
-      return 1;
-    });
-
-    setLineOpacities(newOpacities);
-  });
 
   return (
     <group ref={groupRef}>
