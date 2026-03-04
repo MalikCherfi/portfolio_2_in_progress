@@ -168,8 +168,6 @@ export default function CubeSubTextAnimated({
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       scrollTarget.current += e.deltaY * 0.002;
-
-      console.log("scrollTarget:", scrollTarget.current);
     };
 
     window.addEventListener("wheel", handleWheel);
