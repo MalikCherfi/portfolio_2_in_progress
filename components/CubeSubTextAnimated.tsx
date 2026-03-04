@@ -43,9 +43,8 @@ export default function CubeSubTextAnimated({
   const [heights, setHeights] = useState<HeightInfo[]>(
     Array(lines.length).fill({ totalHeight: 0 }),
   );
-  const [lineOpacities, setLineOpacities] = useState<number[]>(
-    Array(lines.length).fill(1),
-  );
+  const lineOpacitiesRef = useRef<number[]>(Array(lines.length).fill(1));
+  const textMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
 
   // base fontSize
   const base = useMemo(() => {
@@ -77,6 +76,27 @@ export default function CubeSubTextAnimated({
     to: { y: targetY, opacity: zoomDone && isTextClicked.clicked ? 1 : 0 },
     config: { duration: 1000, easing: easings.easeInOutSine },
   });
+
+  // 🔥 calcul des offsets cumulés
+  const offsets = useMemo(() => {
+    const arr: number[] = [];
+    let cumulative = 0;
+
+    for (let i = 0; i < heights.length; i++) {
+      arr.push(cumulative);
+
+      const h = heights[i]?.totalHeight ?? 0;
+
+      cumulative += h;
+
+      // espace manuel entre blocs
+      if (heights[i]?.addGap) {
+        cumulative += base.fontSize * base.lineHeight;
+      }
+    }
+
+    return arr;
+  }, [heights, base.fontSize, base.lineHeight]);
 
   useFrame(() => {
     if (!groupRef.current) return;
@@ -117,7 +137,14 @@ export default function CubeSubTextAnimated({
       return 1;
     });
 
-    setLineOpacities(newOpacities);
+    lineOpacitiesRef.current = newOpacities;
+
+    textMeshRefs.current.forEach((mesh, i) => {
+      if (!mesh) return;
+      mesh.position.x = newOpacities[i] === 0 ? 9999 : positionX;
+      mesh.material.opacity =
+        spring.opacity.get() * lineOpacitiesRef.current[i];
+    });
 
     // Gère le scroll
     const min = 0; // limite basse
@@ -138,27 +165,6 @@ export default function CubeSubTextAnimated({
     groupRef.current.position.y = currentScroll.current;
   });
 
-  // 🔥 calcul des offsets cumulés
-  const offsets = useMemo(() => {
-    const arr: number[] = [];
-    let cumulative = 0;
-
-    for (let i = 0; i < heights.length; i++) {
-      arr.push(cumulative);
-
-      const h = heights[i]?.totalHeight ?? 0;
-
-      cumulative += h;
-
-      // espace manuel entre blocs
-      if (heights[i]?.addGap) {
-        cumulative += base.fontSize * base.lineHeight;
-      }
-    }
-
-    return arr;
-  }, [heights, base.fontSize, base.lineHeight]);
-
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       scrollTarget.current += e.deltaY * 0.002;
@@ -176,19 +182,11 @@ export default function CubeSubTextAnimated({
   return (
     <group ref={groupRef}>
       {lines.map((line, index) => {
-        const updatedPositionX =
-          lineOpacities[index] === 0
-            ? positionX * lineOpacities[index]
-            : positionX;
-
         return (
           <AnimatedText
+            ref={(el) => (textMeshRefs.current[index] = el as any)}
             key={index}
-            position={[
-              updatedPositionX,
-              spring.y.get() - offsets[index],
-              positionZ,
-            ]}
+            position={[positionX, spring.y.get() - offsets[index], positionZ]}
             rotation={rotation}
             font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
             fontSize={base.fontSize}
@@ -199,9 +197,6 @@ export default function CubeSubTextAnimated({
             anchorX="center"
             anchorY="top"
             textAlign="center"
-            material-opacity={spring.opacity.to(
-              (o) => o * lineOpacities[index],
-            )}
             material-transparent
             onSync={(self) => {
               const info = self.textRenderInfo;
