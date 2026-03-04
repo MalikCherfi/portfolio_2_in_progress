@@ -11,8 +11,8 @@ const AnimatedText = animated(Text);
 type Line = {
   text?: string;
   link?: string;
-  cols?: { text: string; link: string; onClick?: () => void }[];
-  onClick?: () => void;
+  cols?: { text: string; onClick?: () => void }[];
+  onClick?: () => void
 };
 
 type Props = {
@@ -42,18 +42,18 @@ export default function CubeTextAnimated({
 
     const distance = zoomCamera ? 5 : 20;
 
-    const fovRad = (camera.fov * Math.PI) / 180;
+    const fovRad = (perspectiveCamera.fov * Math.PI) / 180;
 
     const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
 
-    const maxWidth = visibleHeight * camera.aspect * 0.45;
+    const maxWidth = visibleHeight * perspectiveCamera.aspect * 0.45;
 
     return {
       fontSize,
       maxWidth,
       lineGap: fontSize * 2,
     };
-  }, [zoomCamera, camera.fov, camera.aspect]);
+  }, [zoomCamera, perspectiveCamera.fov, perspectiveCamera.aspect]);
 
   const { targetY } = useMemo(() => {
     const targetDistance = zoomCamera ? 5 - 2.61 : 20 - 2.61;
