@@ -6,7 +6,7 @@ const CubeSubDescriptionText = () => {
 
   const components = {
     nomade_process: {
-      component: (
+      component: () => (
         <CubeSubTextAnimated
           key="nomade_process"
           positionX={-2.61}
@@ -35,7 +35,7 @@ const CubeSubDescriptionText = () => {
     },
   };
 
-  return <>{isTextClicked.clicked && components[isTextClicked.id].component}</>;
+  return <>{isTextClicked.clicked && components[isTextClicked.id]?.component()}</>;
 };
 
 export default CubeSubDescriptionText;
