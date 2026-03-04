@@ -6,6 +6,7 @@ import { PerspectiveCamera } from "three";
 import { useMemo, useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { handleTextOpacityOnScroll } from "../utils/handleTextOpacityOnScroll";
+import { handleScroll } from "../utils/handleScroll";
 
 const AnimatedText = animated(Text);
 
@@ -102,10 +103,8 @@ export default function CubeSubTextAnimated({
   useFrame(() => {
     if (!groupRef.current) return;
 
-    // Affiche le groupe seulement si la caméra est proches
     groupRef.current.visible = perspectiveCamera.position.z <= 18;
 
-    // Gère l'opacité des lignes
     handleTextOpacityOnScroll(
       groupRef,
       offsets,
@@ -116,23 +115,7 @@ export default function CubeSubTextAnimated({
       textMeshRefs,
     );
 
-    // Gère le scroll
-    const min = 0; // limite basse
-    const max = 5; // limite haute
-
-    scrollTarget.current = THREE.MathUtils.clamp(
-      scrollTarget.current,
-      min,
-      max,
-    );
-
-    currentScroll.current = THREE.MathUtils.lerp(
-      currentScroll.current,
-      scrollTarget.current,
-      0.08,
-    );
-
-    groupRef.current.position.y = currentScroll.current;
+    handleScroll(scrollTarget, currentScroll, groupRef);
   });
 
   useEffect(() => {
