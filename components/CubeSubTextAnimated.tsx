@@ -181,44 +181,57 @@ export default function CubeSubTextAnimated({
 
   return (
     <group ref={groupRef}>
-      {lines.map((line, index) => (
-        <AnimatedText
-          key={index}
-          position={[positionX, spring.y.get() - offsets[index], positionZ]}
-          rotation={rotation}
-          font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
-          fontSize={base.fontSize}
-          maxWidth={base.maxWidth}
-          lineHeight={base.lineHeight}
-          letterSpacing={-0.015}
-          color={line.link ? "#4ea1ff" : "#ffffff"}
-          anchorX="center"
-          anchorY="top"
-          textAlign="center"
-          material-opacity={spring.opacity.to((o) => o * lineOpacities[index])}
-          material-transparent
-          onSync={(self) => {
-            const info = self.textRenderInfo;
-            if (!info) return;
+      {lines.map((line, index) => {
+        const updatedPositionX =
+          lineOpacities[index] === 0
+            ? positionX * lineOpacities[index]
+            : positionX;
 
-            const totalHeight = info.blockBounds[3] - info.blockBounds[1];
+        return (
+          <AnimatedText
+            key={index}
+            position={[
+              updatedPositionX,
+              spring.y.get() - offsets[index],
+              positionZ,
+            ]}
+            rotation={rotation}
+            font="/fonts/SpaceGrotesk-VariableFont_wght.ttf"
+            fontSize={base.fontSize}
+            maxWidth={base.maxWidth}
+            lineHeight={base.lineHeight}
+            letterSpacing={-0.015}
+            color={line.link ? "#4ea1ff" : "#ffffff"}
+            anchorX="center"
+            anchorY="top"
+            textAlign="center"
+            material-opacity={spring.opacity.to(
+              (o) => o * lineOpacities[index],
+            )}
+            material-transparent
+            onSync={(self) => {
+              const info = self.textRenderInfo;
+              if (!info) return;
 
-            setHeights((prev) => {
-              const copy = [...prev];
-              copy[index] = { totalHeight, addGap: line.addGap } as any;
-              return copy;
-            });
-          }}
-          onClick={() => {
-            if (line.link) {
-              return window.open(line.link, "_blank", "noopener,noreferrer");
-            }
-            if (line.onClick) return line.onClick();
-          }}
-        >
-          {line.text}
-        </AnimatedText>
-      ))}
+              const totalHeight = info.blockBounds[3] - info.blockBounds[1];
+
+              setHeights((prev) => {
+                const copy = [...prev];
+                copy[index] = { totalHeight, addGap: line.addGap } as any;
+                return copy;
+              });
+            }}
+            onClick={() => {
+              if (line.link) {
+                return window.open(line.link, "_blank", "noopener,noreferrer");
+              }
+              if (line.onClick) return line.onClick();
+            }}
+          >
+            {line.text}
+          </AnimatedText>
+        );
+      })}
     </group>
   );
 }
