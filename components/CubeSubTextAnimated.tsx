@@ -147,8 +147,6 @@ export default function CubeSubTextAnimated({
     const visibleTop = base.visibleHeight / 8;
     const visibleBottom = -base.visibleHeight / 3;
 
-    // console.log("groupY:", groupY, "visibleTop:", visibleTop, "visibleBottom:", visibleBottom);
-
     const fadeDistance = 0.5;
 
     const newOpacities = offsets.map((offset) => {
