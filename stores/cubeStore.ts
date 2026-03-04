@@ -25,7 +25,7 @@ type CubeStore = {
   setZoomDone: (zoom: boolean) => void;
   isTextClicked: {
     clicked: boolean;
-    id: ProjectId | null;
+    id: ProjectId | undefined;
   };
   setIsTextClicked: (clicked: boolean, id?: ProjectId) => void;
 };
@@ -43,7 +43,7 @@ export const useCubeStore = create<CubeStore>((set) => ({
   zoomDone: false,
   setZoomDone: (zoom) => set({ zoomDone: zoom }),
 
-  isTextClicked: { clicked: false, id: null },
+  isTextClicked: { clicked: false, id: undefined },
   setIsTextClicked: (clicked, id) =>
-    set({ isTextClicked: { clicked, id: id || null } }),
+    set({ isTextClicked: { clicked, id: id || undefined } }),
 }));
