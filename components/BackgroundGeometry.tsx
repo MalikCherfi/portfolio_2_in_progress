@@ -2,7 +2,10 @@
 
 import { useRef, useState, useMemo, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Float, MeshTransmissionMaterial } from "@react-three/drei";
+import {
+  Float,
+  // MeshTransmissionMaterial
+} from "@react-three/drei";
 import * as THREE from "three";
 
 type ItemType = "cube" | "sphere";
@@ -179,8 +182,8 @@ const BackgroundGeometry = () => {
   return (
     <>
       {items.map((item, index) => {
-        const [x, y, z] = item.position;
-        const isInFrontOfCube = z > 4 && x > -2 && x < 2 && y > -2 && y < 2;
+        // const [x, y, z] = item.position;
+        // const isInFrontOfCube = z > 4 && x > -2 && x < 2 && y > -2 && y < 2;
 
         return (
           <Float
@@ -201,7 +204,7 @@ const BackgroundGeometry = () => {
               onPointerCancel={(e) => endDrag(e)}
             >
               {geometryMap[item.type]}
-              {isInFrontOfCube ? (
+              {/* {isInFrontOfCube ? (
                 <MeshTransmissionMaterial
                   color={item.color}
                   emissive={item.color}
@@ -213,17 +216,17 @@ const BackgroundGeometry = () => {
                   backside={false}
                   samples={2}
                 />
-              ) : (
-                <meshStandardMaterial
-                  color={item.color}
-                  emissive={item.color}
-                  emissiveIntensity={0.3}
-                  roughness={1}
-                  metalness={0}
-                  transparent
-                  opacity={0.9}
-                />
-              )}
+              ) : ( */}
+              <meshStandardMaterial
+                color={item.color}
+                emissive={item.color}
+                emissiveIntensity={0.3}
+                roughness={1}
+                metalness={0}
+                transparent
+                opacity={0.9}
+              />
+              {/* )} */}
             </mesh>
           </Float>
         );
