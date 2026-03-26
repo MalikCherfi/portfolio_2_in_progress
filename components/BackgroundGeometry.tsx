@@ -20,9 +20,9 @@ type ArrayItem = {
 
 const BackgroundGeometry = () => {
   const { camera, gl } = useThree();
-  const fps = 30;
-  const interval = 1 / fps;
-  const acc = useRef(0);
+  const fps = 1;
+  // const interval = 1 / fps;
+  // const acc = useRef(0);
 
   // --- INITIAL ITEMS ---
   const [items, setItems] = useState<ArrayItem[]>(() => {
@@ -148,36 +148,36 @@ const BackgroundGeometry = () => {
   );
 
   // --- USE FRAME : INERTIA + DRAG ---
-  useFrame((_, delta) => {
-    acc.current += delta;
-    if (acc.current < interval) return;
-    acc.current = 0;
+  // useFrame((_, delta) => {
+  //   acc.current += delta;
+  //   if (acc.current < interval) return;
+  //   acc.current = 0;
 
-    setItems((prev) =>
-      prev.map((item, idx) => {
-        if (draggingIndex.current === idx) return item;
+  //   setItems((prev) =>
+  //     prev.map((item, idx) => {
+  //       if (draggingIndex.current === idx) return item;
 
-        const vx = item.velocity.x * 0.92;
-        const vy = item.velocity.y * 0.92;
+  //       const vx = item.velocity.x * 0.92;
+  //       const vy = item.velocity.y * 0.92;
 
-        if (Math.abs(vx) < 1e-5 && Math.abs(vy) < 1e-5) {
-          if (item.velocity.x === 0 && item.velocity.y === 0) return item;
+  //       if (Math.abs(vx) < 1e-5 && Math.abs(vy) < 1e-5) {
+  //         if (item.velocity.x === 0 && item.velocity.y === 0) return item;
 
-          return { ...item, velocity: { x: 0, y: 0 } };
-        }
+  //         return { ...item, velocity: { x: 0, y: 0 } };
+  //       }
 
-        return {
-          ...item,
-          position: [
-            item.position[0] + vx,
-            item.position[1] + vy,
-            item.position[2],
-          ],
-          velocity: { x: vx, y: vy },
-        };
-      }),
-    );
-  });
+  //       return {
+  //         ...item,
+  //         position: [
+  //           item.position[0] + vx,
+  //           item.position[1] + vy,
+  //           item.position[2],
+  //         ],
+  //         velocity: { x: vx, y: vy },
+  //       };
+  //     }),
+  //   );
+  // });
 
   return (
     <>
