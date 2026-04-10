@@ -135,6 +135,16 @@ const Cube = () => {
     } catch {}
   };
 
+  const { setDpr } = useThree();
+
+  useEffect(() => {
+    if (zoomCamera) {
+      setDpr(1); // ✅ baisse la résolution au zoom
+    } else {
+      setDpr(window.devicePixelRatio); // ✅ restaure la résolution normale
+    }
+  }, [zoomCamera]);
+
   return (
     <group
       ref={groupRef}
