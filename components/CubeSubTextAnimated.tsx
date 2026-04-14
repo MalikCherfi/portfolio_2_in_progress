@@ -36,7 +36,9 @@ export default function CubeSubTextAnimated({
   rotation,
   lines,
 }: Props) {
-  const { zoomDone, isTextClicked, zoomCamera } = useCubeStore();
+  const isTextClicked = useCubeStore((state) => state.isTextClicked);
+  const zoomDone = useCubeStore((state) => state.zoomDone);
+  const zoomCamera = useCubeStore((state) => state.zoomCamera);
   const { camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
@@ -117,14 +119,30 @@ export default function CubeSubTextAnimated({
   });
 
   useEffect(() => {
+    let lastTouchY = 0;
+
     const handleWheel = (e: WheelEvent) => {
       scrollTarget.current += e.deltaY * 0.002;
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const deltaY = lastTouchY - e.touches[0].clientY;
+      lastTouchY = e.touches[0].clientY;
+      scrollTarget.current += deltaY * 0.009;
+    };
+
     window.addEventListener("wheel", handleWheel);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchmove", handleTouchMove);
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, []);
 
