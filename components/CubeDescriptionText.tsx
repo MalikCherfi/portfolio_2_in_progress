@@ -2,7 +2,8 @@ import CubeTextAnimated from "./CubeTextAnimated";
 import { useCubeStore } from "@/stores/cubeStore";
 
 const CubeDescriptionText = () => {
-  const { setIsTextClicked, isTextClicked } = useCubeStore();
+  const isTextClicked = useCubeStore((state) => state.isTextClicked);
+  const setIsTextClicked = useCubeStore((state) => state.setIsTextClicked);
 
   const components = [
     {

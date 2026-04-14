@@ -3,7 +3,7 @@ import { useCubeStore } from "@/stores/cubeStore";
 import type { ProjectId } from "@/stores/cubeStore";
 
 const CubeSubDescriptionText = () => {
-  const { isTextClicked } = useCubeStore();
+  const isTextClicked = useCubeStore((state) => state.isTextClicked);
 
   const components: Record<ProjectId, { component: () => React.ReactElement }> =
     {

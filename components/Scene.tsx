@@ -8,7 +8,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useIsMobile } from "../utils/useIsMobile";
 
 const Scene = () => {
-  const { bounceY, zoomCamera } = useCubeStore();
+  const bounceY = useCubeStore((state) => state.bounceY);
+  const zoomCamera = useCubeStore((state) => state.zoomCamera);
   const isMobile = useIsMobile();
 
   const rightLight = useMemo(() => {

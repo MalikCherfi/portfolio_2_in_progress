@@ -16,7 +16,9 @@ const Cube = () => {
   const [isDragging, setIsDragging] = useState(false);
   const isMobile = useIsMobile();
 
-  const { rotate, setRotate, zoomCamera } = useCubeStore();
+  const setRotate = useCubeStore((state) => state.setRotate);
+  const zoomCamera = useCubeStore((state) => state.zoomCamera);
+  const rotate = useCubeStore((state) => state.rotate);
   const clock = useRef(new THREE.Clock());
   const timeOffset = useRef(0);
   const setBounceY = useCubeStore((state) => state.setBounceY);
@@ -157,7 +159,7 @@ const Cube = () => {
       <CubeText targetQuaternion={targetQuaternion} />
 
       <CubeDescriptionText />
-      <CubeSubDescriptionText />
+      {/* <CubeSubDescriptionText /> */}
 
       <RoundedBox
         ref={boxRef}

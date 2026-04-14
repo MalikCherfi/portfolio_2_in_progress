@@ -7,7 +7,10 @@ const CubeText = ({ targetQuaternion }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragThreshold = 5;
 
-  const { setRotate, setZoomCamera, setZoomDone, zoomCamera } = useCubeStore();
+  const setRotate = useCubeStore((state) => state.setRotate);
+  const zoomCamera = useCubeStore((state) => state.zoomCamera);
+  const setZoomCamera = useCubeStore((state) => state.setZoomCamera);
+  const setZoomDone = useCubeStore((state) => state.setZoomDone);
 
   const [fontSize, setFontSize] = useState(0.42);
   const [targetFontSize, setTargetFontSize] = useState(0.42);

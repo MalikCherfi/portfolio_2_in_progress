@@ -12,7 +12,7 @@ type Line = {
   text?: string;
   link?: string;
   cols?: { text: string; onClick?: () => void }[];
-  onClick?: () => void
+  onClick?: () => void;
 };
 
 type Props = {
@@ -28,9 +28,11 @@ export default function CubeTextAnimated({
   positionZ,
   rotation,
   lines,
-  columnCount
+  columnCount,
 }: Props) {
-  const { zoomDone, isTextClicked, zoomCamera } = useCubeStore();
+  const zoomCamera = useCubeStore((state) => state.zoomCamera);
+  const zoomDone = useCubeStore((state) => state.zoomDone);
+  const isTextClicked = useCubeStore((state) => state.isTextClicked);
   const { camera } = useThree();
   const perspectiveCamera = camera as PerspectiveCamera;
   const groupRef = useRef<THREE.Group>(null);
