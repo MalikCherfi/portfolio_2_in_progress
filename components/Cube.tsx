@@ -159,7 +159,7 @@ const Cube = () => {
       <CubeText targetQuaternion={targetQuaternion} />
 
       <CubeDescriptionText />
-      {/* <CubeSubDescriptionText /> */}
+      <CubeSubDescriptionText />
 
       <RoundedBox
         ref={boxRef}
