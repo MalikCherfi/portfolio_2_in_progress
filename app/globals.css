@@ -24,3 +24,58 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* global.css */
+.spin-ring {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  animation: spin 1.4s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.shape {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+
+.sq1 {
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+}
+.sq2 {
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+}
+
+.tri1 {
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-bottom: 32px solid rgba(255, 255, 255, 0.75);
+}
+
+.tri2 {
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 32px solid rgba(255, 255, 255, 0.75);
+}
