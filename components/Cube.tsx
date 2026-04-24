@@ -2,6 +2,7 @@ import { useRef, useState, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useCubeStore } from "@/stores/cubeStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { RoundedBox } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import CubeText from "./CubeText";
@@ -32,7 +33,7 @@ const Cube = () => {
   const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
 
-  const cubeColor = useCubeStore((state) => state.cubeColor);
+  const cubeColor = useThemeStore((state) => state.cubeColor);
   const currentColor = useRef(new THREE.Color("#B6465F"));
   const targetColor = useRef(new THREE.Color("#B6465F"));
   const matRef = useRef<THREE.MeshStandardMaterial>(null!);
