@@ -8,7 +8,7 @@ import { Stats } from "@react-three/drei";
 import SceneReadyWatcher from "../components/SceneReadyWatcher";
 import Loader from "../components/Loader";
 import { useState, useCallback } from "react";
-import { useCubeStore } from "@/stores/cubeStore";
+import { useThemeStore } from "@/stores/themeStore";
 
 // Dans THEMES de page.tsx
 const THEMES = [
@@ -38,8 +38,8 @@ export default function Home() {
   const [currentTheme, setCurrentTheme] = useState(0);
   const [nextTheme, setNextTheme] = useState<number | null>(null);
   const [animating, setAnimating] = useState(false);
-  const setCubeColor = useCubeStore((state) => state.setCubeColor);
-  const setGeoColors = useCubeStore((state) => state.setGeoColors);
+  const setCubeColor = useThemeStore((state) => state.setCubeColor);
+  const setGeoColors = useThemeStore((state) => state.setGeoColors);
 
   const changeTheme = useCallback(() => {
     if (animating) return;
