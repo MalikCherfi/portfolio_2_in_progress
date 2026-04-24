@@ -7,7 +7,7 @@ import {
   // MeshTransmissionMaterial
 } from "@react-three/drei";
 import * as THREE from "three";
-import { useCubeStore } from "@/stores/cubeStore";
+import { useThemeStore } from "@/stores/themeStore";
 
 type ItemType = "cube" | "sphere";
 
@@ -52,7 +52,7 @@ const BackgroundGeometry = () => {
   const tempVec = useMemo(() => new THREE.Vector3(), []);
   const tempCamDir = useMemo(() => new THREE.Vector3(), []);
 
-  const geoColors = useCubeStore((state) => state.geoColors);
+  const geoColors = useThemeStore((state) => state.geoColors);
 
   const matRefs = useRef<(THREE.MeshStandardMaterial | null)[]>([]);
   const currentColors = useRef<THREE.Color[]>([]);
