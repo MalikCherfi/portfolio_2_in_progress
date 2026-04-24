@@ -32,6 +32,16 @@ const Cube = () => {
   const axisX = useMemo(() => new THREE.Vector3(1, 0, 0), []);
   const axisY = useMemo(() => new THREE.Vector3(0, 1, 0), []);
 
+  const cubeColor = useCubeStore((state) => state.cubeColor);
+  const currentColor = useRef(new THREE.Color("#B6465F"));
+  const targetColor = useRef(new THREE.Color("#B6465F"));
+  const matRef = useRef<THREE.MeshStandardMaterial>(null!);
+
+  // Sync target quand cubeColor change
+  useEffect(() => {
+    targetColor.current.set(cubeColor);
+  }, [cubeColor]);
+
   // --- Frame loop ---
   useFrame(() => {
     if (!groupRef.current) return;
@@ -89,6 +99,12 @@ const Cube = () => {
         timeOffset.current = clock.current.getElapsedTime();
         setRotate({ reset: false, target_face: false });
       }
+    }
+
+    // ---------------- COLOR / TRANSITION ----------------
+    if (matRef.current) {
+      currentColor.current.lerp(targetColor.current, 0.03);
+      matRef.current.color.copy(currentColor.current);
     }
 
     setBounceY(groupRef.current.position.y);
@@ -170,7 +186,8 @@ const Cube = () => {
         receiveShadow={!isMobile}
       >
         <meshStandardMaterial
-          color="#B6465F"
+          ref={matRef}
+          // retire color=... ici, géré par useFrame
           roughness={0.55}
           metalness={0}
           aoMap={isMobile ? undefined : ao}
