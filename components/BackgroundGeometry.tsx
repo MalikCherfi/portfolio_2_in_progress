@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState, useMemo, useCallback } from "react";
+import { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
   Float,
   // MeshTransmissionMaterial
 } from "@react-three/drei";
 import * as THREE from "three";
+import { useCubeStore } from "@/stores/cubeStore";
 
 type ItemType = "cube" | "sphere";
 
@@ -50,6 +51,34 @@ const BackgroundGeometry = () => {
 
   const tempVec = useMemo(() => new THREE.Vector3(), []);
   const tempCamDir = useMemo(() => new THREE.Vector3(), []);
+
+  const geoColors = useCubeStore((state) => state.geoColors);
+
+  const matRefs = useRef<(THREE.MeshStandardMaterial | null)[]>([]);
+  const currentColors = useRef<THREE.Color[]>([]);
+  const targetColors = useRef<THREE.Color[]>([]);
+
+
+  useEffect(() => {
+    currentColors.current = items.map((item) => new THREE.Color(item.color));
+    targetColors.current = items.map((item) => new THREE.Color(item.color));
+  }, []);
+
+  useEffect(() => {
+    items.forEach((item, i) => {
+      const baseColor = item.color === "#B6465F" ? geoColors[0] : geoColors[1];
+      targetColors.current[i]?.set(baseColor);
+    });
+  }, [geoColors]);
+
+  useFrame(() => {
+    matRefs.current.forEach((mat, i) => {
+      if (!mat || !currentColors.current[i] || !targetColors.current[i]) return;
+      currentColors.current[i].lerp(targetColors.current[i], 0.03);
+      mat.color.copy(currentColors.current[i]);
+      mat.emissive.copy(currentColors.current[i]);
+    });
+  });
 
   // --- HELPER : MOUSE TO WORLD ---
   const pointerToPlane = useCallback(
@@ -218,8 +247,10 @@ const BackgroundGeometry = () => {
                 />
               ) : ( */}
               <meshStandardMaterial
-                color={item.color}
-                emissive={item.color}
+                ref={(el) => {
+                  matRefs.current[index] = el;
+                }}
+                // color et emissive retirés — gérés par useFrame
                 emissiveIntensity={0.3}
                 roughness={1}
                 metalness={0}
