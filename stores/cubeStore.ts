@@ -28,10 +28,6 @@ type CubeStore = {
     id: ProjectId | undefined;
   };
   setIsTextClicked: (clicked: boolean, id?: ProjectId) => void;
-  cubeColor: string;
-  setCubeColor: (color: string) => void;
-  geoColors: string[];
-  setGeoColors: (colors: string[]) => void;
 };
 
 export const useCubeStore = create<CubeStore>((set) => ({
@@ -50,10 +46,4 @@ export const useCubeStore = create<CubeStore>((set) => ({
   isTextClicked: { clicked: false, id: undefined },
   setIsTextClicked: (clicked, id) =>
     set({ isTextClicked: { clicked, id: id || undefined } }),
-
-  cubeColor: "#B6465F",
-  setCubeColor: (color) => set({ cubeColor: color }),
-
-  geoColors: ["#B6465F", "#CE6A6B"],
-  setGeoColors: (colors) => set({ geoColors: colors }),
 }));
